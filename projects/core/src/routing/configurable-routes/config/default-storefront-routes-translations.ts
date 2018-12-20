@@ -2,7 +2,6 @@ import { StorefrontRoutesTranslations } from './storefront-routes-translations';
 
 export const defaultStorefrontRoutesTranslations: {
   default?: StorefrontRoutesTranslations;
-  [languageCode: string]: StorefrontRoutesTranslations;
 } = {
   default: {
     home: { paths: [''] },
@@ -45,7 +44,5 @@ export const defaultStorefrontRoutesTranslations: {
       paths: ['my-account/orders/:orderCode'],
       paramsMapping: { orderCode: 'code' }
     }
-  },
-
-  en: {} as any
+  }
 };

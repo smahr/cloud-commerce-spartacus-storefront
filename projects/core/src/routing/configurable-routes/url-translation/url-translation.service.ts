@@ -156,6 +156,10 @@ export class UrlTranslationService {
       )
     );
 
+    result.unshift(
+      ...this.configurableRoutesService.getUrlCurrentLocalePrefix()
+    );
+
     result.unshift(''); // ensure absolute path ( leading '' in path array is equvalent to leading '/' in string)
     return result;
   }

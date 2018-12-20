@@ -52,20 +52,20 @@ export class RoutesConfigLoader {
       this.configurableRoutesConfig.routesConfig,
       routesConfig
     );
-    return this.extendLanguagesTranslationsWithDefault(mergedRoutesConfig);
+    return this.extendLocalesTranslationsWithDefault(mergedRoutesConfig);
   }
 
-  private extendLanguagesTranslationsWithDefault(
+  private extendLocalesTranslationsWithDefault(
     routesConfig: RoutesConfig
   ): RoutesConfig {
     const defaultTranslations = routesConfig.translations.default;
 
-    Object.keys(routesConfig.translations).forEach(languageCode => {
-      const languageTranslations = routesConfig.translations[languageCode];
-      routesConfig.translations[languageCode] = deepMerge(
+    Object.keys(routesConfig.translations.locales).forEach(locale => {
+      const localeTranslations = routesConfig.translations.locales[locale];
+      routesConfig.translations.locales[locale] = deepMerge(
         {},
         defaultTranslations,
-        languageTranslations
+        localeTranslations
       );
     });
 

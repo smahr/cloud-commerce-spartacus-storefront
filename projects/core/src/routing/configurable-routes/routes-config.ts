@@ -3,7 +3,10 @@ import { StorefrontRoutesTranslations } from './config/storefront-routes-transla
 export interface RoutesConfig {
   translations?: {
     default?: RoutesTranslations | StorefrontRoutesTranslations;
-    [languageCode: string]: RoutesTranslations | StorefrontRoutesTranslations;
+    locales?: {
+      [languageCode: string]: RoutesTranslations | StorefrontRoutesTranslations;
+    };
+    useLocales?: null | string | string[];
   };
   fetch?: boolean;
 }
