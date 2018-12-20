@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ConfigurableRoutesService } from '../configurable-routes.service';
 import { RouteRecognizerService } from './route-recognizer.service';
 import { UrlParsingService } from './url-parsing.service';
 import { ServerConfig } from '../../../config/server-config/server-config';
@@ -10,13 +9,16 @@ import {
   TranslateUrlOptionsRoute,
   TranslateUrlOptionsRouteObject
 } from './translate-url-options';
+import { RoutesTranslationsService } from '../routes-translations.service';
+import { RouteLocaleService } from '../route-locale.service';
 
 @Injectable()
 export class UrlTranslationService {
   readonly ROOT_URL = ['/'];
 
   constructor(
-    private configurableRoutesService: ConfigurableRoutesService,
+    private routeLocaleService: RouteLocaleService,
+    private routesTranslationsService: RoutesTranslationsService,
     private routeRecognizer: RouteRecognizerService,
     private urlParser: UrlParsingService,
     private config: ServerConfig
@@ -121,7 +123,7 @@ export class UrlTranslationService {
       nestedRoutesParams
     } = this.splitRoutesNamesAndParams(standarizedNestedRoutes);
 
-    const nestedRoutesTranslations = this.configurableRoutesService.getNestedRoutesTranslations(
+    const nestedRoutesTranslations = this.routesTranslationsService.getRoutesTranslations(
       nestedRoutesNames
     );
 
@@ -156,9 +158,7 @@ export class UrlTranslationService {
       )
     );
 
-    result.unshift(
-      ...this.configurableRoutesService.getUrlCurrentLocalePrefix()
-    );
+    result.unshift(...this.routeLocaleService.getUrlCurrentLocalePrefix());
 
     result.unshift(''); // ensure absolute path ( leading '' in path array is equvalent to leading '/' in string)
     return result;

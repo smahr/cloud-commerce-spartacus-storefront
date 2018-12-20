@@ -64,11 +64,9 @@ describe('StorefrontComponent', () => {
 
   describe('ngOnInit', () => {
     it('should set current language for routes', () => {
-      spyOn(configurableRoutesService, 'translateRouterConfig');
+      spyOn(configurableRoutesService, 'init');
       component.ngOnInit();
-      expect(
-        configurableRoutesService.translateRouterConfig
-      ).toHaveBeenCalled();
+      expect(configurableRoutesService.init).toHaveBeenCalled();
     });
   });
 });

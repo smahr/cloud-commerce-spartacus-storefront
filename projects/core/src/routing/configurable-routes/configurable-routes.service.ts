@@ -2,11 +2,9 @@ import { Injectable } from '@angular/core';
 import { Routes, Router, Route } from '@angular/router';
 import { ServerConfig } from '../../config/server-config/server-config';
 import { RoutesConfigLoader } from './routes-config-loader';
-import {
-  RoutesTranslations,
-  RouteTranslation,
-  RoutesConfig
-} from './routes-config';
+import { RoutesTranslations, RoutesConfig } from './routes-config';
+import { RoutesTranslationsService } from './routes-translations.service';
+import { RouteLocaleService } from './route-locale.service';
 
 type ConfigurableRouteKey = 'cxPath' | 'cxRedirectTo';
 
@@ -15,51 +13,37 @@ export class ConfigurableRoutesService {
   constructor(
     private readonly config: ServerConfig,
     private readonly router: Router,
-    private readonly loader: RoutesConfigLoader
+    private readonly loader: RoutesConfigLoader,
+    private readonly routesTranslationsService: RoutesTranslationsService,
+    private readonly routeLocaleService: RouteLocaleService
   ) {}
-
-  private currentLocale: string;
 
   private get routesTranslations(): RoutesConfig['translations'] {
     return this.loader.routesConfig.translations;
   }
 
-  private get currentRoutesTranslations(): RoutesTranslations {
-    return (this.currentLocale
-      ? this.routesTranslations.locales[this.currentLocale]
-      : this.routesTranslations.default) as RoutesTranslations;
-  }
-
   // spike todo improve name of method:
-  private get configuredRouteLocales(): RoutesConfig['translations']['useLocales'] {
-    return this.loader.routesConfig.translations.useLocales;
-  }
 
-  translateRouterConfig() {
+  init() {
     // spike todo rethink if string | string[] is good type for useLocales:
-    if (!this.currentLocale) {
-      this.currentLocale = Array.isArray(this.configuredRouteLocales)
-        ? this.configuredRouteLocales[0] // spike todo reconsider it and document it: first language is used as default
-        : this.configuredRouteLocales;
-    }
+    const routeLocales = this.routeLocaleService.routeLocales;
 
     let newRouterConfig: Routes;
 
-    if (Array.isArray(this.configuredRouteLocales)) {
-      const translationsPerLocale = this.configuredRouteLocales.reduce(
-        (acc, locale) => {
-          const translations = this.getRoutesTranslationsForLocale(locale);
-          return translations ? { ...acc, [locale]: translations } : acc;
-        },
-        {}
-      );
-      newRouterConfig = this.translateMultiLocalesRoutes(
+    if (Array.isArray(routeLocales)) {
+      const translationsPerLocale = routeLocales.reduce((acc, locale) => {
+        const translations = this.routesTranslationsService.getAllRoutesTranslationsForLocale(
+          locale
+        );
+        return translations ? { ...acc, [locale]: translations } : acc;
+      }, {});
+      newRouterConfig = this.translateRoutesPerLocale(
         this.router.config,
         translationsPerLocale
       );
-    } else if (typeof this.configuredRouteLocales === 'string') {
-      const translations = this.getRoutesTranslationsForLocale(
-        this.configuredRouteLocales
+    } else if (typeof routeLocales === 'string') {
+      const translations = this.routesTranslationsService.getAllRoutesTranslationsForLocale(
+        routeLocales
       );
       newRouterConfig = this.translateRoutes(this.router.config, translations);
     } else {
@@ -68,96 +52,12 @@ export class ConfigurableRoutesService {
       newRouterConfig = this.translateRoutes(this.router.config, translations);
     }
 
+    console.log(newRouterConfig); // spike todo remove
+
     return this.router.resetConfig(newRouterConfig);
   }
 
-  private getRoutesTranslationsForLocale(locale: string): RoutesTranslations {
-    const translations = this.routesTranslations.locales[locale];
-    if (!translations) {
-      this.warn(
-        `There are no translations in routes config for locale '${locale}'`
-      );
-    }
-    return translations as RoutesTranslations;
-  }
-
-  setCurrentLocale(locale: string) {
-    if (this.getRoutesTranslationsForLocale(locale)) {
-      this.currentLocale = locale;
-    }
-  }
-
-  private shouldUrlHaveLocalePrefix(): boolean {
-    return Array.isArray(this.configuredRouteLocales); // if many locales in use, then prefix them with locale, for example /en/*
-  }
-
-  getUrlCurrentLocalePrefix(): string[] {
-    return this.shouldUrlHaveLocalePrefix() ? [this.currentLocale] : [];
-  }
-
-  // spike todo move method to other service:
-  getNestedRoutesTranslations(
-    nestedRouteNames: string[],
-    routesTranslations: RoutesTranslations = this.currentRoutesTranslations
-  ): RouteTranslation[] {
-    return this.getNestedRoutesTranslationsRecursive(
-      nestedRouteNames,
-      routesTranslations,
-      []
-    );
-  }
-
-  // spike todo move method to other service:
-  private getNestedRoutesTranslationsRecursive(
-    nestedRoutesNames: string[],
-    routesTranslations: RoutesTranslations,
-    accResult: RouteTranslation[]
-  ): RouteTranslation[] {
-    if (!nestedRoutesNames.length) {
-      return accResult;
-    }
-    const [routeName, ...remainingRouteNames] = nestedRoutesNames;
-    const translation = this.getRouteTranslation(routeName, routesTranslations);
-    if (!translation) {
-      return null;
-    }
-
-    if (remainingRouteNames.length) {
-      const childrenTranslations = this.getChildrenRoutesTranslations(
-        routeName,
-        routesTranslations
-      );
-      if (!childrenTranslations) {
-        this.warn(
-          `No children routes translations were configured for page '${routeName}' in locale '${
-            this.currentLocale // spike todo check if currentLocale is used here implicit
-          }'!`
-        );
-        return null;
-      }
-
-      return this.getNestedRoutesTranslationsRecursive(
-        remainingRouteNames,
-        childrenTranslations,
-        accResult.concat(translation)
-      );
-    }
-    return accResult.concat(translation);
-  }
-
-  // spike todo move method to other service:
-  private getChildrenRoutesTranslations(
-    routeName: string,
-    routesTranslations: RoutesTranslations
-  ): RoutesTranslations {
-    const routeTranslation = this.getRouteTranslation(
-      routeName,
-      routesTranslations
-    );
-    return routeTranslation && routeTranslation.children;
-  }
-
-  private translateMultiLocalesRoutes(
+  private translateRoutesPerLocale(
     routes: Routes,
     routesTranslationsPerLocale: {
       [locale: string]: RoutesTranslations;
@@ -175,20 +75,15 @@ export class ConfigurableRoutesService {
     const translatedRoutesPerLocale: Routes = Object.keys(
       routesTranslationsPerLocale
     ).map(locale => ({
-      path: locale, // parent route will have locale
+      path: locale,
       children: this.translateRoutes(
         routes,
         routesTranslationsPerLocale[locale]
-      ),
-      data: { __cxRouteLocale: locale } // spike todo take care of not localized routes
+      )
     }));
-    const result = isLastRouteWildcard
+    return isLastRouteWildcard
       ? translatedRoutesPerLocale.concat(lastRoute)
       : translatedRoutesPerLocale;
-
-    // spike todo remove
-    console.log(result);
-    return result;
   }
 
   private translateRoutes(
@@ -221,7 +116,7 @@ export class ConfigurableRoutesService {
   ): Routes {
     if (this.isConfigurable(route, 'cxPath')) {
       const routeName = this.getConfigurable(route, 'cxPath');
-      const childrenTranslations = this.getChildrenRoutesTranslations(
+      const childrenTranslations = this.routesTranslationsService.getChildrenRoutesTranslations(
         routeName,
         routesTranslations
       );
@@ -266,6 +161,7 @@ export class ConfigurableRoutesService {
     return [route]; // if nothing is configurable, just pass the original route
   }
 
+  // spike todo: re-consider names of those 2 methods:
   private isConfigurable(route: Route, key: ConfigurableRouteKey): boolean {
     return !!this.getConfigurable(route, key);
   }
@@ -298,27 +194,11 @@ export class ConfigurableRoutesService {
 
     // spike todo make it cleaner:
     const siteContextUrlPefix =
-      '/' + this.getUrlCurrentLocalePrefix().join('/') + '/';
+      '/' + this.routeLocaleService.getUrlCurrentLocalePrefix().join('/') + '/';
 
     return translatedPaths.length
       ? [{ ...route, redirectTo: siteContextUrlPefix + translatedPath }]
       : [];
-  }
-
-  // spike todo move method to other service:
-  private getRouteTranslation(
-    routeName: string,
-    routesTranslations: RoutesTranslations
-  ): RouteTranslation {
-    const result = routesTranslations && routesTranslations[routeName];
-    if (!routesTranslations || result === undefined) {
-      this.warn(
-        `No route translation was configured for page '${routeName}' in locale '${
-          this.currentLocale // spike todo check if currentLocale is used here implicit
-        }'!`
-      );
-    }
-    return result;
   }
 
   private getTranslatedPaths(
@@ -327,7 +207,10 @@ export class ConfigurableRoutesService {
     routesTranslations: RoutesTranslations
   ): string[] {
     const routeName = this.getConfigurable(route, key);
-    const translation = this.getRouteTranslation(routeName, routesTranslations);
+    const translation = this.routesTranslationsService.getRouteTranslation(
+      routeName,
+      routesTranslations
+    );
     if (translation === undefined) {
       this.warn(
         `Could not translate key '${key}' of route '${routeName}'`,

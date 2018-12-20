@@ -57,7 +57,7 @@ describe('ConfigurableRoutesService', () => {
   describe('translateRouterConfig', () => {
     it('should NOT translate "paths" of routes that are NOT configurable', () => {
       router.config = [{ path: 'path1' }, { path: 'path2' }];
-      service.translateRouterConfig('default');
+      service.init('default');
       expect(router.config).toEqual([{ path: 'path1' }, { path: 'path2' }]);
     });
 
@@ -66,7 +66,7 @@ describe('ConfigurableRoutesService', () => {
         { path: 'path1', redirectTo: 'path100' },
         { path: 'path2', redirectTo: 'path200' }
       ];
-      service.translateRouterConfig('default');
+      service.init('default');
       expect(router.config).toEqual([
         { path: 'path1', redirectTo: 'path100' },
         { path: 'path2', redirectTo: 'path200' }
@@ -84,7 +84,7 @@ describe('ConfigurableRoutesService', () => {
           page2: { paths: ['path2'] }
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(router.config[0].path).toEqual('path1');
       expect(router.config[1].path).toEqual('path2');
     });
@@ -100,7 +100,7 @@ describe('ConfigurableRoutesService', () => {
           page2: { paths: ['path200'] }
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(router.config[0].path).toEqual('path1');
       expect(router.config[0].redirectTo).toEqual('path100');
       expect(router.config[1].path).toEqual('path2');
@@ -119,7 +119,7 @@ describe('ConfigurableRoutesService', () => {
           page2: { paths: ['path2'] }
         }
       };
-      service.translateRouterConfig('testUnknownLanguage');
+      service.init('testUnknownLanguage');
       expect(router.config[0].path).toEqual('path1');
       expect(router.config[1].path).toEqual('path2');
     });
@@ -136,7 +136,7 @@ describe('ConfigurableRoutesService', () => {
           page2: { paths: ['path200'] }
         }
       };
-      service.translateRouterConfig('testUnknownLanguage');
+      service.init('testUnknownLanguage');
       expect(router.config[0].path).toEqual('path1');
       expect(router.config[0].redirectTo).toEqual('path100');
       expect(router.config[1].path).toEqual('path2');
@@ -146,14 +146,14 @@ describe('ConfigurableRoutesService', () => {
     it('should console.warn in non-production environment if there are no translations for given language code', () => {
       spyOn(console, 'warn');
       serverConfig.production = false;
-      service.translateRouterConfig('testUnknownLanguage');
+      service.init('testUnknownLanguage');
       expect(console.warn).toHaveBeenCalled();
     });
 
     it('should NOT console.warn in production environment if there are no translations for given language code', () => {
       spyOn(console, 'warn');
       serverConfig.production = true;
-      service.translateRouterConfig('testUnknownLanguage');
+      service.init('testUnknownLanguage');
       expect(console.warn).not.toHaveBeenCalled();
     });
 
@@ -169,7 +169,7 @@ describe('ConfigurableRoutesService', () => {
           page2: { paths: ['path2'] }
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(console.warn).toHaveBeenCalled();
     });
     it('should NOT console.warn in production environment if a route has configurable both "path" and "redirectTo"', () => {
@@ -184,7 +184,7 @@ describe('ConfigurableRoutesService', () => {
           page2: { paths: ['path2'] }
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(console.warn).not.toHaveBeenCalled();
     });
 
@@ -195,7 +195,7 @@ describe('ConfigurableRoutesService', () => {
           page1: { paths: ['path1', 'path100'] }
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(router.config.length).toEqual(2);
       expect(router.config[0].path).toEqual('path1');
       expect(router.config[1].path).toEqual('path100');
@@ -210,7 +210,7 @@ describe('ConfigurableRoutesService', () => {
           page1: { paths: ['path1', 'path100'] }
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(router.config.length).toEqual(1);
       expect(router.config[0].redirectTo).toEqual('path1');
     });
@@ -222,7 +222,7 @@ describe('ConfigurableRoutesService', () => {
           page1: null
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(router.config.length).toEqual(0);
     });
 
@@ -233,7 +233,7 @@ describe('ConfigurableRoutesService', () => {
       loader.routesConfig.translations = {
         testLanguage: {}
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(console.warn).toHaveBeenCalled();
     });
 
@@ -244,7 +244,7 @@ describe('ConfigurableRoutesService', () => {
       loader.routesConfig.translations = {
         testLanguage: {}
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(console.warn).not.toHaveBeenCalled();
     });
 
@@ -271,7 +271,7 @@ describe('ConfigurableRoutesService', () => {
           page4: { paths: ['path40', 'path400'] }
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(router.config.length).toBe(7);
       expect(router.config).toEqual([
         // normal routes
@@ -306,7 +306,7 @@ describe('ConfigurableRoutesService', () => {
         }
       };
       const expectedResult = [{ paths: ['path1', 'path10'] }];
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(service.getNestedRoutesTranslations(['page1'])).toEqual(
         expectedResult
       );
@@ -318,7 +318,7 @@ describe('ConfigurableRoutesService', () => {
       loader.routesConfig.translations = {
         testLanguage: {}
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(service.getNestedRoutesTranslations(['page1'])).toBe(null);
       expect(console.warn).toHaveBeenCalled();
     });
@@ -331,7 +331,7 @@ describe('ConfigurableRoutesService', () => {
           page1: null
         }
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(service.getNestedRoutesTranslations(['page1'])).toBe(null);
       expect(console.warn).not.toHaveBeenCalled();
     });
@@ -342,7 +342,7 @@ describe('ConfigurableRoutesService', () => {
       loader.routesConfig.translations = {
         testLanguage: {}
       };
-      service.translateRouterConfig('testLanguage');
+      service.init('testLanguage');
       expect(service.getNestedRoutesTranslations(['page1'])).toBe(null);
       expect(console.warn).not.toHaveBeenCalled();
     });
