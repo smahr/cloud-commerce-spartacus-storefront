@@ -44,8 +44,7 @@ export const defaultStorefrontRoutesTranslations: {
     orderDetails: {
       paths: ['my-account/orders/:orderCode'],
       paramsMapping: { orderCode: 'code' }
-    },
-    pageNotFound: { paths: ['**'] }
+    }
   },
 
   en: {} as any

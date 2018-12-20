@@ -8,10 +8,10 @@ import { UrlTranslationModule } from '@spartacus/core';
 
 const routes: Routes = [
   {
-    path: null,
+    path: '**',
     component: PageNotFoundComponent,
     canActivate: [CmsPageGuards],
-    data: { pageLabel: 'notFound', cxPath: 'pageNotFound' }
+    data: { pageLabel: 'notFound' }
   }
 ];
 
