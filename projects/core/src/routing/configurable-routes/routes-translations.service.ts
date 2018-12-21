@@ -10,7 +10,6 @@ import { RouteLocaleService } from './route-locale.service';
 
 @Injectable()
 export class RoutesTranslationsService {
-  // spike todo: find better name for this service
   constructor(
     private readonly config: ServerConfig,
     private readonly loader: RoutesConfigLoader,
@@ -29,7 +28,8 @@ export class RoutesTranslationsService {
       : this.routesTranslations.default) as RoutesTranslations;
   }
 
-  getAllRoutesTranslationsForLocale(locale: string): RoutesTranslations {
+  // spike todo find better names to distinquis methods getRoutesTranslationsForLocale, getDefaultRoutesTranslations, getRoutesTranslations (for nested routes)
+  getByLocale(locale: string): RoutesTranslations {
     const translations = this.routesTranslations.locales[locale];
     if (!translations) {
       this.warn(
@@ -39,18 +39,22 @@ export class RoutesTranslationsService {
     return translations as RoutesTranslations;
   }
 
-  getRoutesTranslations(
+  getDefault(): RoutesTranslations {
+    return this.routesTranslations.default as RoutesTranslations;
+  }
+
+  getByNestedRoutesNames(
     nestedRouteNames: string[],
     routesTranslations: RoutesTranslations = this.currentRoutesTranslations
   ): RouteTranslation[] {
-    return this.getRoutesTranslationsRecursive(
+    return this.getByNestedRoutesNamesRecursive(
       nestedRouteNames,
       routesTranslations,
       []
     );
   }
 
-  private getRoutesTranslationsRecursive(
+  private getByNestedRoutesNamesRecursive(
     nestedRoutesNames: string[],
     routesTranslations: RoutesTranslations,
     accResult: RouteTranslation[]
@@ -59,7 +63,7 @@ export class RoutesTranslationsService {
       return accResult;
     }
     const [routeName, ...remainingRouteNames] = nestedRoutesNames;
-    const translation = this.getRouteTranslation(routeName, routesTranslations);
+    const translation = this.getByRouteName(routeName, routesTranslations);
     if (!translation) {
       return null;
     }
@@ -78,7 +82,7 @@ export class RoutesTranslationsService {
         return null;
       }
 
-      return this.getRoutesTranslationsRecursive(
+      return this.getByNestedRoutesNamesRecursive(
         remainingRouteNames,
         childrenTranslations,
         accResult.concat(translation)
@@ -92,15 +96,12 @@ export class RoutesTranslationsService {
     routeName: string,
     routesTranslations: RoutesTranslations
   ): RoutesTranslations {
-    const routeTranslation = this.getRouteTranslation(
-      routeName,
-      routesTranslations
-    );
+    const routeTranslation = this.getByRouteName(routeName, routesTranslations);
     return routeTranslation && routeTranslation.children;
   }
 
   // spike todo: consider if this method should be public and if it's really neded
-  getRouteTranslation(
+  getByRouteName(
     routeName: string,
     routesTranslations: RoutesTranslations
   ): RouteTranslation {

@@ -123,7 +123,7 @@ export class UrlTranslationService {
       nestedRoutesParams
     } = this.splitRoutesNamesAndParams(standarizedNestedRoutes);
 
-    const nestedRoutesTranslations = this.routesTranslationsService.getRoutesTranslations(
+    const nestedRoutesTranslations = this.routesTranslationsService.getByNestedRoutesNames(
       nestedRoutesNames
     );
 
@@ -158,7 +158,7 @@ export class UrlTranslationService {
       )
     );
 
-    result.unshift(...this.routeLocaleService.getUrlCurrentLocalePrefix());
+    result.unshift(this.routeLocaleService.urlLocalePrefix);
 
     result.unshift(''); // ensure absolute path ( leading '' in path array is equvalent to leading '/' in string)
     return result;

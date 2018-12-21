@@ -20,11 +20,5 @@ export class StorefrontComponent implements OnInit {
   ngOnInit() {
     // spike todo: move this function call to other place:
     this.configurableRoutesService.init();
-
-    // spike todo: move this subscription to other place:
-    // spike todo: use current prefix of URL, if present - not content active language
-    this.languageService.getActive().subscribe(locale => {
-      this.routeLocaleService.setCurrentRouteLocale(locale);
-    });
   }
 }
