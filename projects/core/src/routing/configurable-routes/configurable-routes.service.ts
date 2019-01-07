@@ -196,11 +196,11 @@ export class ConfigurableRoutesService {
       'cxRedirectTo',
       translations
     );
-    let translatedPath = translatedPaths[0]; // take the first path from list by convention
+    let translatedPath = '/' + translatedPaths[0]; // take the first path from list (by convention) and make it absolute
 
-    // spike todo: when url context prefix are made configurable infuture, here we should have the given routeLocale (instead of current)
+    // spike todo: when url context prefix are made configurable in future, here we should have the given routeLocale (instead of current)
     if (this.routeLocaleService.shouldUrlContainRouteLocale()) {
-      translatedPath = routeLocale + '/' + translatedPath;
+      translatedPath = '/' + routeLocale + translatedPath;
     }
 
     return translatedPaths.length
