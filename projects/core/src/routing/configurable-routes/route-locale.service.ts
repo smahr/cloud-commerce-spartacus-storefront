@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { RoutesConfigLoader } from './routes-config-loader';
 import { UrlParsingService } from './url-translation/url-parsing.service';
+import { Location } from '@angular/common';
 
 @Injectable()
 export class RouteLocaleService {
   constructor(
     private routesConfigLoader: RoutesConfigLoader,
-    private urlParser: UrlParsingService
+    private urlParser: UrlParsingService,
+    private location: Location
   ) {}
 
   private _currentRouteLocale: string;
@@ -21,6 +23,7 @@ export class RouteLocaleService {
     return this.routesConfigLoader.routesConfig.translations.useLocale;
   }
 
+  // spike todo: update the current route location after every location change (in case of navigation to url with other locale)
   private getInitialRouteLocale(): string {
     if (Array.isArray(this.validRouteLocales)) {
       if (this.validRouteLocales.length > 1) {
@@ -35,7 +38,7 @@ export class RouteLocaleService {
   }
 
   private detectRouteLocaleDynamically(): string {
-    const currentUrl = window.location.pathname; // SPIKE TODO: check how to make it work with SSR (without window object)!
+    const currentUrl = this.location.path(); // SPIKE TODO: check how to make it work with SSR!
     const urlSegments = this.urlParser.getPrimarySegments(currentUrl);
     const routeLocaleFromUrl = urlSegments[0]; // spike todo improve it when more url context parameters are made configurable in future
 
@@ -49,7 +52,7 @@ export class RouteLocaleService {
   }
 
   shouldUrlContainRouteLocale(): boolean {
-    // if many route locales are in use, prefixevery url with the locale, for example /en/*
+    // if many route locales are in use, prefix every url with the locale, for example /en/*
     return (
       Array.isArray(this.validRouteLocales) && this.validRouteLocales.length > 1
     );
