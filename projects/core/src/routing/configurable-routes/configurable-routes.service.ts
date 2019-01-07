@@ -18,31 +18,32 @@ export class ConfigurableRoutesService {
 
   init() {
     const validRouteLocales = this.routeLocaleService.validRouteLocales;
-    const { wildcardRoutes, normalRoutes } = this.extractWildcardRoutes(
-      this.router.config
+    const [wildcardRoutes, nonWildcardRoutes] = this.partition(
+      this.router.config,
+      route => route.path === '**'
     );
+    const [configurableRoutes, nonConfigurableRoutes] = this.partition(
+      nonWildcardRoutes,
+      route =>
+        this.isConfigurable(route, 'cxPath') ||
+        this.isConfigurable(route, 'cxRedirectTo')
+    );
+
     const newRouterConfig = this.initRoutes(
-      normalRoutes,
+      configurableRoutes,
       validRouteLocales
-    ).concat(wildcardRoutes);
+    ).concat(nonConfigurableRoutes, wildcardRoutes);
     this.router.resetConfig(newRouterConfig);
-    console.log(newRouterConfig); // spike
   }
 
-  private extractWildcardRoutes(
-    routes: Routes
-  ): {
-    wildcardRoutes: Routes;
-    normalRoutes: Routes;
-  } {
-    return routes.reduce(
-      (acc, route) => {
-        route.path === '**'
-          ? acc.wildcardRoutes.push(route)
-          : acc.normalRoutes.push(route);
-        return acc;
+  private partition(list: any[], condition: (any) => boolean): [any[], any[]] {
+    return list.reduce(
+      ([positiveList, negativeList], element) => {
+        return condition(element)
+          ? [[...positiveList, element], negativeList]
+          : [positiveList, [...negativeList, element]];
       },
-      { wildcardRoutes: [], normalRoutes: [] }
+      [[], []]
     );
   }
 
