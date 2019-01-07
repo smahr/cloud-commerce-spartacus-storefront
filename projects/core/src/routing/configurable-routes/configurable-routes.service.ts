@@ -18,18 +18,24 @@ export class ConfigurableRoutesService {
   ) {}
 
   init() {
-    const routeLocales = this.routeLocaleService.routeLocales; // spike todo rethink if string | string[] is good type for useLocales
-    let newRouterConfig: Routes;
-    if (Array.isArray(routeLocales)) {
-      newRouterConfig = this.initWithManyLocales(routeLocales);
-    } else if (typeof routeLocales === 'string') {
-      newRouterConfig = this.initWithOneLocale(routeLocales);
-    } else {
-      newRouterConfig = this.initWithDefault();
-    }
+    const routeLocales = this.routeLocaleService.validRouteLocales;
+    const newRouterConfig = this.initRoutes(routeLocales);
     this.router.resetConfig(newRouterConfig);
   }
 
+  private initRoutes(routeLocales: string[]): Routes {
+    if (Array.isArray(routeLocales)) {
+      if (routeLocales.length > 1) {
+        return this.initWithManyLocales(routeLocales);
+      }
+      if (routeLocales.length === 1) {
+        return this.initWithOneLocale(routeLocales[0]);
+      }
+    }
+    return this.initWithDefault();
+  }
+
+  // spike improve names of methods starting with init*
   private initWithManyLocales(routeLocales: string[]): Routes {
     const translationsPerLocale = routeLocales.reduce((acc, locale) => {
       const translations = this.routesTranslationsService.getByLocale(locale);
@@ -50,7 +56,7 @@ export class ConfigurableRoutesService {
     const translations = this.routesTranslationsService.getByLocale(
       routeLocale
     );
-    return this.translateRoutes(this.router.config, translations, routeLocale);
+    return this.translateRoutes(this.router.config, translations, null);
   }
 
   private initWithDefault() {
@@ -191,12 +197,15 @@ export class ConfigurableRoutesService {
       'cxRedirectTo',
       translations
     );
-    const translatedPath = translatedPaths[0]; // take the first path from list by convention
+    let translatedPath = translatedPaths[0]; // take the first path from list by convention
 
-    const urlLocalePrefix = routeLocale ? routeLocale + '/' : '';
+    // spike todo: when url context prefix are made configurable infuture, here we should have the given routeLocale (instead of current)
+    if (this.routeLocaleService.shouldUrlContainRouteLocale()) {
+      translatedPath = routeLocale + '/' + translatedPath;
+    }
 
     return translatedPaths.length
-      ? [{ ...route, redirectTo: urlLocalePrefix + translatedPath }]
+      ? [{ ...route, redirectTo: translatedPath }]
       : [];
   }
 

@@ -6,7 +6,7 @@ export interface RoutesConfig {
     locales?: {
       [languageCode: string]: RoutesTranslations | StorefrontRoutesTranslations;
     };
-    useLocales?: null | string | string[];
+    useLocale?: string[];
   };
   fetch?: boolean;
 }

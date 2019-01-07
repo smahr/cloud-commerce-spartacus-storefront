@@ -158,7 +158,10 @@ export class UrlTranslationService {
       )
     );
 
-    result.unshift(this.routeLocaleService.urlLocalePrefix);
+    // spike todo: handle url context prefix
+    if (this.routeLocaleService.shouldUrlContainRouteLocale()) {
+      result.unshift(this.routeLocaleService.currentRouteLocale);
+    }
 
     result.unshift(''); // ensure absolute path ( leading '' in path array is equvalent to leading '/' in string)
     return result;
