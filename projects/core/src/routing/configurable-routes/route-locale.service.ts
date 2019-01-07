@@ -2,13 +2,16 @@ import { Injectable } from '@angular/core';
 import { RoutesConfigLoader } from './routes-config-loader';
 import { UrlParsingService } from './url-translation/url-parsing.service';
 import { Location } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Injectable()
 export class RouteLocaleService {
   constructor(
     private routesConfigLoader: RoutesConfigLoader,
     private urlParser: UrlParsingService,
-    private location: Location
+    private location: Location,
+    private router: Router
   ) {}
 
   private _currentRouteLocale: string;
@@ -27,7 +30,10 @@ export class RouteLocaleService {
   private getInitialRouteLocale(): string {
     if (Array.isArray(this.validRouteLocales)) {
       if (this.validRouteLocales.length > 1) {
-        return this.detectRouteLocaleDynamically();
+        this.updateCurrentRouteLocaleOnEveryRouteChange();
+
+        // use Location service not to wait for the initialization of the router.url (which is `/` on the initial application's render)
+        return this.getRouteLocaleFromUrl(this.location.path()); // SPIKE TODO: check if Location.path() works with SSR!
       }
       if (this.validRouteLocales.length === 1) {
         return this.validRouteLocales[0];
@@ -37,14 +43,25 @@ export class RouteLocaleService {
     return null;
   }
 
-  private detectRouteLocaleDynamically(): string {
-    const currentUrl = this.location.path(); // SPIKE TODO: check how to make it work with SSR!
-    const urlSegments = this.urlParser.getPrimarySegments(currentUrl);
+  private updateCurrentRouteLocaleOnEveryRouteChange() {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this._currentRouteLocale = this.getRouteLocaleFromUrl(
+          event.urlAfterRedirects
+        );
+      });
+  }
+
+  private getRouteLocaleFromUrl(url: string): string {
+    const urlSegments = this.urlParser.getPrimarySegments(url);
     const routeLocaleFromUrl = urlSegments[0]; // spike todo improve it when more url context parameters are made configurable in future
 
     return this.isValidRouteLocale(routeLocaleFromUrl)
       ? routeLocaleFromUrl
-      : this.validRouteLocales[0]; // fallback to the first configured locale if the route locale in the url is not valid
+      : // if the route locale in the URL is not valid, fallback to the previous value of currentRouteLocale
+        // if there are no previous value, just get the first configured locale by convention
+        this._currentRouteLocale || this.validRouteLocales[0];
   }
 
   private isValidRouteLocale(text: string): boolean {
