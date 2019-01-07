@@ -17,50 +17,66 @@ export class ConfigurableRoutesService {
   ) {}
 
   init() {
-    const routeLocales = this.routeLocaleService.validRouteLocales;
-    const newRouterConfig = this.initRoutes(routeLocales);
+    const validRouteLocales = this.routeLocaleService.validRouteLocales;
+    const { wildcardRoutes, normalRoutes } = this.extractWildcardRoutes(
+      this.router.config
+    );
+    const newRouterConfig = this.initRoutes(
+      normalRoutes,
+      validRouteLocales
+    ).concat(wildcardRoutes);
     this.router.resetConfig(newRouterConfig);
+    console.log(newRouterConfig); // spike
   }
 
-  private initRoutes(routeLocales: string[]): Routes {
+  private extractWildcardRoutes(
+    routes: Routes
+  ): {
+    wildcardRoutes: Routes;
+    normalRoutes: Routes;
+  } {
+    return routes.reduce(
+      (acc, route) => {
+        route.path === '**'
+          ? acc.wildcardRoutes.push(route)
+          : acc.normalRoutes.push(route);
+        return acc;
+      },
+      { wildcardRoutes: [], normalRoutes: [] }
+    );
+  }
+
+  private initRoutes(routes: Routes, routeLocales: string[]): Routes {
     if (Array.isArray(routeLocales)) {
       if (routeLocales.length > 1) {
-        return this.initWithManyLocales(routeLocales);
+        return this.initWithManyLocales(routes, routeLocales);
       }
       if (routeLocales.length === 1) {
-        return this.initWithOneLocale(routeLocales[0]);
+        return this.initWithOneLocale(routes, routeLocales[0]);
       }
     }
-    return this.initWithDefault();
+    return this.initWithDefault(routes);
   }
 
-  // spike improve names of methods starting with init*
-  private initWithManyLocales(routeLocales: string[]): Routes {
+  private initWithManyLocales(routes: Routes, routeLocales: string[]): Routes {
     const translationsPerLocale = routeLocales.reduce((acc, locale) => {
       const translations = this.routesTranslationsService.getByLocale(locale);
       return translations ? { ...acc, [locale]: translations } : acc;
     }, {});
 
-    const wildcardRoutes = this.router.config.filter(
-      route => route.path === '**'
-    );
-
-    return this.translateRoutesWithLocales(
-      this.router.config,
-      translationsPerLocale
-    ).concat(wildcardRoutes);
+    return this.translateRoutesWithLocales(routes, translationsPerLocale);
   }
 
-  private initWithOneLocale(routeLocale: string): Routes {
+  private initWithOneLocale(routes: Routes, routeLocale: string): Routes {
     const translations = this.routesTranslationsService.getByLocale(
       routeLocale
     );
-    return this.translateRoutes(this.router.config, translations, null);
+    return this.translateRoutes(routes, translations, null);
   }
 
-  private initWithDefault() {
+  private initWithDefault(routes: Routes) {
     const translations = this.routesTranslationsService.getDefault();
-    return this.translateRoutes(this.router.config, translations, null);
+    return this.translateRoutes(routes, translations, null);
   }
 
   private translateRoutesWithLocales(
