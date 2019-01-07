@@ -60,7 +60,7 @@ export class RouteLocaleService {
     return this.isValidRouteLocale(routeLocaleFromUrl)
       ? routeLocaleFromUrl
       : // if the route locale in the URL is not valid, fallback to the previous value of currentRouteLocale
-        // if there are no previous value, just get the first configured locale by convention
+        // or if there is no previous value, just get the first configured locale by convention
         this._currentRouteLocale || this.validRouteLocales[0];
   }
 
