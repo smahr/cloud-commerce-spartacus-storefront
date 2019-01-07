@@ -17,11 +17,33 @@ export class ConfigurableRoutesService {
   ) {}
 
   init() {
-    const validRouteLocales = this.routeLocaleService.validRouteLocales;
+    const {
+      wildcardRoutes,
+      configurableRoutes,
+      nonConfigurableRoutes
+    } = this.partitionRoutes(this.router.config);
+
+    const newRouterConfig = this.configureRoutes(
+      configurableRoutes,
+      this.routeLocaleService.validRouteLocales
+    ).concat(nonConfigurableRoutes, wildcardRoutes);
+
+    this.router.resetConfig(newRouterConfig);
+    // console.log(newRouterConfig); // spike todo remove
+  }
+
+  private partitionRoutes(
+    routes: Routes
+  ): {
+    wildcardRoutes: Routes;
+    configurableRoutes: Routes;
+    nonConfigurableRoutes: Routes;
+  } {
     const [wildcardRoutes, nonWildcardRoutes] = this.partition(
-      this.router.config,
+      routes,
       route => route.path === '**'
     );
+
     const [configurableRoutes, nonConfigurableRoutes] = this.partition(
       nonWildcardRoutes,
       route =>
@@ -29,11 +51,11 @@ export class ConfigurableRoutesService {
         this.isConfigurable(route, 'cxRedirectTo')
     );
 
-    const newRouterConfig = this.initRoutes(
+    return {
+      wildcardRoutes,
       configurableRoutes,
-      validRouteLocales
-    ).concat(nonConfigurableRoutes, wildcardRoutes);
-    this.router.resetConfig(newRouterConfig);
+      nonConfigurableRoutes
+    };
   }
 
   private partition(list: any[], condition: (any) => boolean): [any[], any[]] {
@@ -47,7 +69,7 @@ export class ConfigurableRoutesService {
     );
   }
 
-  private initRoutes(routes: Routes, routeLocales: string[]): Routes {
+  private configureRoutes(routes: Routes, routeLocales: string[]): Routes {
     if (Array.isArray(routeLocales)) {
       if (routeLocales.length > 1) {
         return this.initWithManyLocales(routes, routeLocales);
