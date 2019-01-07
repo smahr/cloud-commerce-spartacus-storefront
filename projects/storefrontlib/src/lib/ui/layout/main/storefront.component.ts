@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  ConfigurableRoutesService,
-  LanguageService,
-  RouteLocaleService
-} from '@spartacus/core';
+import { ConfigurableRoutesService } from '@spartacus/core';
 
 @Component({
   selector: 'cx-storefront',
@@ -11,11 +7,7 @@ import {
   styleUrls: ['./storefront.component.scss']
 })
 export class StorefrontComponent implements OnInit {
-  constructor(
-    private configurableRoutesService: ConfigurableRoutesService,
-    private languageService: LanguageService,
-    private routeLocaleService: RouteLocaleService
-  ) {}
+  constructor(private configurableRoutesService: ConfigurableRoutesService) {}
 
   ngOnInit() {
     // spike todo: move this function call to other place:

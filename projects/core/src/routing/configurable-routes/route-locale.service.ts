@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { RoutesConfigLoader } from './routes-config-loader';
-import { RoutesConfig } from './routes-config';
 import { UrlParsingService } from './url-translation/url-parsing.service';
 
 @Injectable()
