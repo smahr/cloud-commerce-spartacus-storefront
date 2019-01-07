@@ -11,7 +11,7 @@ const routes: Routes = [
     path: '**',
     component: PageNotFoundComponent,
     canActivate: [CmsPageGuards],
-    data: { pageLabel: 'notFound' }
+    data: { pageLabel: 'notFound', cxPath: 'pageNotFound' }
   }
 ];
 
