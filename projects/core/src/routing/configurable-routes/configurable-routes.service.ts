@@ -4,6 +4,7 @@ import { ServerConfig } from '../../config/server-config/server-config';
 import { RoutesTranslations } from './routes-config';
 import { RoutesTranslationsService } from './routes-translations.service';
 import { RouteLocaleService } from './route-locale.service';
+import { partition } from './utils/partition';
 
 type ConfigurableRouteKey = 'cxPath' | 'cxRedirectTo';
 
@@ -29,7 +30,6 @@ export class ConfigurableRoutesService {
     ).concat(nonConfigurableRoutes, wildcardRoutes);
 
     this.router.resetConfig(newRouterConfig);
-    // console.log(newRouterConfig); // spike todo remove
   }
 
   private partitionRoutes(
@@ -39,12 +39,12 @@ export class ConfigurableRoutesService {
     configurableRoutes: Routes;
     nonConfigurableRoutes: Routes;
   } {
-    const [wildcardRoutes, nonWildcardRoutes] = this.partition(
+    const [wildcardRoutes, nonWildcardRoutes] = partition(
       routes,
       route => route.path === '**'
     );
 
-    const [configurableRoutes, nonConfigurableRoutes] = this.partition(
+    const [configurableRoutes, nonConfigurableRoutes] = partition(
       nonWildcardRoutes,
       route =>
         this.isConfigurable(route, 'cxPath') ||
@@ -58,64 +58,48 @@ export class ConfigurableRoutesService {
     };
   }
 
-  private partition(list: any[], condition: (any) => boolean): [any[], any[]] {
-    return list.reduce(
-      ([positiveList, negativeList], element) => {
-        return condition(element)
-          ? [[...positiveList, element], negativeList]
-          : [positiveList, [...negativeList, element]];
-      },
-      [[], []]
-    );
-  }
-
-  private configureRoutes(routes: Routes, routeLocales: string[]): Routes {
-    if (Array.isArray(routeLocales)) {
-      if (routeLocales.length > 1) {
-        return this.initWithManyLocales(routes, routeLocales);
+  private configureRoutes(routes: Routes, validRouteLocales: string[]): Routes {
+    if (Array.isArray(validRouteLocales)) {
+      if (validRouteLocales.length > 1) {
+        return this.configureRoutesForManyLocales(routes, validRouteLocales);
       }
-      if (routeLocales.length === 1) {
-        return this.initWithOneLocale(routes, routeLocales[0]);
+      if (validRouteLocales.length === 1) {
+        return this.configureRoutesForOneLocale(routes, validRouteLocales[0]);
       }
     }
-    return this.initWithDefault(routes);
+    return this.configureRoutesForDefault(routes);
   }
 
-  private initWithManyLocales(routes: Routes, routeLocales: string[]): Routes {
-    const translationsPerLocale = routeLocales.reduce((acc, locale) => {
-      const translations = this.routesTranslationsService.getByLocale(locale);
-      return translations ? { ...acc, [locale]: translations } : acc;
-    }, {});
+  private configureRoutesForManyLocales(
+    routes: Routes,
+    validRouteLocales: string[]
+  ): Routes {
+    return validRouteLocales.map(locale => {
+      const routesTranslations = this.routesTranslationsService.getAllForLocale(
+        locale
+      );
 
-    return this.translateRoutesWithLocales(routes, translationsPerLocale);
+      // nest translated routes as children of the artificial locale route:
+      return {
+        path: locale,
+        children: this.translateRoutes(routes, routesTranslations, locale)
+      };
+    });
   }
 
-  private initWithOneLocale(routes: Routes, routeLocale: string): Routes {
-    const translations = this.routesTranslationsService.getByLocale(
+  private configureRoutesForOneLocale(
+    routes: Routes,
+    routeLocale: string
+  ): Routes {
+    const translations = this.routesTranslationsService.getAllForLocale(
       routeLocale
     );
     return this.translateRoutes(routes, translations, null);
   }
 
-  private initWithDefault(routes: Routes) {
-    const translations = this.routesTranslationsService.getDefault();
+  private configureRoutesForDefault(routes: Routes) {
+    const translations = this.routesTranslationsService.getAllDefault();
     return this.translateRoutes(routes, translations, null);
-  }
-
-  private translateRoutesWithLocales(
-    routes: Routes,
-    routesTranslationsPerLocale: {
-      [locale: string]: RoutesTranslations;
-    }
-  ): Routes {
-    return Object.keys(routesTranslationsPerLocale).map(locale => ({
-      path: locale,
-      children: this.translateRoutes(
-        routes,
-        routesTranslationsPerLocale[locale],
-        locale
-      )
-    }));
   }
 
   private translateRoutes(
@@ -152,10 +136,12 @@ export class ConfigurableRoutesService {
   ): Routes {
     if (this.isConfigurable(route, 'cxPath')) {
       const routeName = this.getConfigurable(route, 'cxPath');
-      const childrenTranslations = this.routesTranslationsService.getChildrenRoutesTranslations(
+      const routeTranslation = this.routesTranslationsService.getForRoute(
         routeName,
         routesTranslations
       );
+      const childrenTranslations =
+        routeTranslation && routeTranslation.children;
 
       if (childrenTranslations === undefined) {
         this.warn(
@@ -237,7 +223,6 @@ export class ConfigurableRoutesService {
     );
     let translatedPath = '/' + translatedPaths[0]; // take the first path from list (by convention) and make it absolute
 
-    // spike todo: when url context prefix are made configurable in future, here we should have the given routeLocale (instead of current)
     if (this.routeLocaleService.shouldUrlContainRouteLocale()) {
       translatedPath = '/' + routeLocale + translatedPath;
     }
@@ -253,7 +238,7 @@ export class ConfigurableRoutesService {
     routesTranslations: RoutesTranslations
   ): string[] {
     const routeName = this.getConfigurable(route, key);
-    const translation = this.routesTranslationsService.getByRouteName(
+    const translation = this.routesTranslationsService.getForRoute(
       routeName,
       routesTranslations
     );

@@ -16,21 +16,23 @@ export class RoutesTranslationsService {
     private readonly routeLocaleService: RouteLocaleService
   ) {}
 
-  private get routesTranslations(): RoutesConfig['translations'] {
+  private get allRoutesTranslations(): RoutesConfig['translations'] {
     return this.loader.routesConfig.translations;
   }
 
   private get currentRoutesTranslations(): RoutesTranslations {
     return (this.routeLocaleService.currentRouteLocale
-      ? this.routesTranslations.locales[
+      ? this.allRoutesTranslations.locales[
           this.routeLocaleService.currentRouteLocale
         ]
-      : this.routesTranslations.default) as RoutesTranslations;
+      : this.allRoutesTranslations.default) as RoutesTranslations;
   }
 
-  // spike todo find better names to distinquis methods getRoutesTranslationsForLocale, getDefaultRoutesTranslations, getRoutesTranslations (for nested routes)
-  getByLocale(locale: string): RoutesTranslations {
-    const translations = this.routesTranslations.locales[locale];
+  /**
+   * Returns all routes translations for the given locale
+   */
+  getAllForLocale(locale: string): RoutesTranslations {
+    const translations = this.allRoutesTranslations.locales[locale];
     if (!translations) {
       this.warn(
         `There are no translations in routes config for locale '${locale}'`
@@ -39,22 +41,28 @@ export class RoutesTranslationsService {
     return translations as RoutesTranslations;
   }
 
-  getDefault(): RoutesTranslations {
-    return this.routesTranslations.default as RoutesTranslations;
+  /**
+   * Returns all default routes translations
+   */
+  getAllDefault(): RoutesTranslations {
+    return this.allRoutesTranslations.default as RoutesTranslations;
   }
 
-  getByNestedRoutesNames(
-    nestedRouteNames: string[],
+  /**
+   * Returns the sequence of routes translations for the given sequence of nested routes
+   */
+  getForNestedRoutesSequence(
+    nestedRoutesNames: string[],
     routesTranslations: RoutesTranslations = this.currentRoutesTranslations
   ): RouteTranslation[] {
-    return this.getByNestedRoutesNamesRecursive(
-      nestedRouteNames,
+    return this.getForNestedRoutesSequenceRecursive(
+      nestedRoutesNames,
       routesTranslations,
       []
     );
   }
 
-  private getByNestedRoutesNamesRecursive(
+  private getForNestedRoutesSequenceRecursive(
     nestedRoutesNames: string[],
     routesTranslations: RoutesTranslations,
     accResult: RouteTranslation[]
@@ -63,26 +71,23 @@ export class RoutesTranslationsService {
       return accResult;
     }
     const [routeName, ...remainingRouteNames] = nestedRoutesNames;
-    const translation = this.getByRouteName(routeName, routesTranslations);
+    const translation = this.getForRoute(routeName, routesTranslations);
     if (!translation) {
       return null;
     }
 
     if (remainingRouteNames.length) {
-      const childrenTranslations = this.getChildrenRoutesTranslations(
-        routeName,
-        routesTranslations
-      );
+      const routeTranslation = this.getForRoute(routeName, routesTranslations);
+      const childrenTranslations =
+        routeTranslation && routeTranslation.children;
       if (!childrenTranslations) {
         this.warn(
-          `No children routes translations were configured for page '${routeName}' in locale '${
-            this.routeLocaleService.currentRouteLocale // spike todo check if currentLocale is used here implicit
-          }'!`
+          `There are children for route '${routeName}' in routes translations '${routesTranslations}'!`
         );
         return null;
       }
 
-      return this.getByNestedRoutesNamesRecursive(
+      return this.getForNestedRoutesSequenceRecursive(
         remainingRouteNames,
         childrenTranslations,
         accResult.concat(translation)
@@ -91,26 +96,17 @@ export class RoutesTranslationsService {
     return accResult.concat(translation);
   }
 
-  // spike todo: consider if this method should be public and if it's really neded
-  getChildrenRoutesTranslations(
-    routeName: string,
-    routesTranslations: RoutesTranslations
-  ): RoutesTranslations {
-    const routeTranslation = this.getByRouteName(routeName, routesTranslations);
-    return routeTranslation && routeTranslation.children;
-  }
-
-  // spike todo: consider if this method should be public and if it's really neded
-  getByRouteName(
+  /**
+   * Returns the route translation for the given route name
+   */
+  getForRoute(
     routeName: string,
     routesTranslations: RoutesTranslations
   ): RouteTranslation {
     const result = routesTranslations && routesTranslations[routeName];
     if (!routesTranslations || result === undefined) {
       this.warn(
-        `No route translation was configured for page '${routeName}' in locale '${
-          this.routeLocaleService.currentRouteLocale // spike todo check if currentLocale is used here implicit
-        }'!`
+        `There is no route '${routeName}' in routes translations '${routesTranslations}'!`
       );
     }
     return result;

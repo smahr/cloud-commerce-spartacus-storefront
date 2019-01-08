@@ -111,19 +111,19 @@ export class UrlTranslationService {
   }
 
   private generateUrl(nestedRoutes: TranslateUrlOptionsRoute[]): string[] {
-    const standarizedNestedRoutes = this.standarizeNestedRoutes(nestedRoutes);
+    const standardizedNestedRoutes = this.standardizeNestedRoutes(nestedRoutes);
 
     // if no routes given, return root url
-    if (!standarizedNestedRoutes.length) {
+    if (!standardizedNestedRoutes.length) {
       return this.ROOT_URL;
     }
 
     const {
       nestedRoutesNames,
       nestedRoutesParams
-    } = this.splitRoutesNamesAndParams(standarizedNestedRoutes);
+    } = this.splitRoutesNamesAndParams(standardizedNestedRoutes);
 
-    const nestedRoutesTranslations = this.routesTranslationsService.getByNestedRoutesNames(
+    const nestedRoutesTranslations = this.routesTranslationsService.getForNestedRoutesSequence(
       nestedRoutesNames
     );
 
@@ -158,7 +158,6 @@ export class UrlTranslationService {
       )
     );
 
-    // spike todo: handle url context prefix
     if (this.routeLocaleService.shouldUrlContainRouteLocale()) {
       result.unshift(this.routeLocaleService.currentRouteLocale);
     }
@@ -170,7 +169,7 @@ export class UrlTranslationService {
   /**
    * Converts all elements to objects
    */
-  private standarizeNestedRoutes(
+  private standardizeNestedRoutes(
     nestedRoutes: TranslateUrlOptionsRoute[]
   ): TranslateUrlOptionsRouteObject[] {
     return (nestedRoutes || []).map(route =>

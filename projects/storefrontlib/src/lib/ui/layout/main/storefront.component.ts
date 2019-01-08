@@ -10,7 +10,6 @@ export class StorefrontComponent implements OnInit {
   constructor(private configurableRoutesService: ConfigurableRoutesService) {}
 
   ngOnInit() {
-    // spike todo: move this function call to other place:
     this.configurableRoutesService.init();
   }
 }

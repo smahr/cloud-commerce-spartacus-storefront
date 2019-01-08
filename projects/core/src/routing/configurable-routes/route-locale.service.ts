@@ -7,6 +7,8 @@ import { filter } from 'rxjs/operators';
 
 @Injectable()
 export class RouteLocaleService {
+  private _currentRouteLocale: string;
+
   constructor(
     private routesConfigLoader: RoutesConfigLoader,
     private urlParser: UrlParsingService,
@@ -14,7 +16,9 @@ export class RouteLocaleService {
     private router: Router
   ) {}
 
-  private _currentRouteLocale: string;
+  /**
+   * The locale that should be used do generate links in current page using routes configuration
+   */
   get currentRouteLocale(): string {
     if (!this._currentRouteLocale) {
       this._currentRouteLocale = this.getInitialRouteLocale();
@@ -22,24 +26,36 @@ export class RouteLocaleService {
     return this._currentRouteLocale;
   }
 
+  /**
+   * The list of locales that should can used to generate links using routes configuration
+   */
   get validRouteLocales(): string[] {
     return this.routesConfigLoader.routesConfig.translations.useLocale;
   }
 
-  // spike todo: update the current route location after every location change (in case of navigation to url with other locale)
+  /**
+   * Tells whether the generated links should contain a locale
+   */
+  shouldUrlContainRouteLocale(): boolean {
+    // if many route locales are in use, prefix every url with a locale, for example /en/*
+    return (
+      Array.isArray(this.validRouteLocales) && this.validRouteLocales.length > 1
+    );
+  }
+
   private getInitialRouteLocale(): string {
     if (Array.isArray(this.validRouteLocales)) {
       if (this.validRouteLocales.length > 1) {
+        // after every route change the currentRouteLocale should be derived from the new URL
         this.updateCurrentRouteLocaleOnEveryRouteChange();
 
         // use Location service not to wait for the initialization of the router.url (which is `/` on the initial application's render)
-        return this.getRouteLocaleFromUrl(this.location.path()); // SPIKE TODO: check if Location.path() works with SSR!
+        return this.getRouteLocaleFromUrl(this.location.path());
       }
       if (this.validRouteLocales.length === 1) {
         return this.validRouteLocales[0];
       }
     }
-    // if no locales are configured then current route locale should be null
     return null;
   }
 
@@ -55,7 +71,7 @@ export class RouteLocaleService {
 
   private getRouteLocaleFromUrl(url: string): string {
     const urlSegments = this.urlParser.getPrimarySegments(url);
-    const routeLocaleFromUrl = urlSegments[0]; // spike todo improve it when more url context parameters are made configurable in future
+    const routeLocaleFromUrl = urlSegments[0];
 
     return this.isValidRouteLocale(routeLocaleFromUrl)
       ? routeLocaleFromUrl
@@ -66,12 +82,5 @@ export class RouteLocaleService {
 
   private isValidRouteLocale(text: string): boolean {
     return this.validRouteLocales.indexOf(text) !== -1;
-  }
-
-  shouldUrlContainRouteLocale(): boolean {
-    // if many route locales are in use, prefix every url with the locale, for example /en/*
-    return (
-      Array.isArray(this.validRouteLocales) && this.validRouteLocales.length > 1
-    );
   }
 }
