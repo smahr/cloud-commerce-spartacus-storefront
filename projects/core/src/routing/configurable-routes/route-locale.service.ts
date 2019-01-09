@@ -20,14 +20,14 @@ export class RouteLocaleService {
    * The locale that should be used do generate links in current page using routes configuration
    */
   get currentRouteLocale(): string {
-    if (!this._currentRouteLocale) {
+    if (this._currentRouteLocale === undefined) {
       this._currentRouteLocale = this.getInitialRouteLocale();
     }
     return this._currentRouteLocale;
   }
 
   /**
-   * The list of locales that should can used to generate links using routes configuration
+   * The list of locales that should can used to generate links
    */
   get validRouteLocales(): string[] {
     return this.routesConfigLoader.routesConfig.translations.useLocale;
@@ -76,7 +76,7 @@ export class RouteLocaleService {
     return this.isValidRouteLocale(routeLocaleFromUrl)
       ? routeLocaleFromUrl
       : // if the route locale in the URL is not valid, fallback to the previous value of currentRouteLocale
-        // or if there is no previous value, just get the first configured locale by convention
+        // or if there is no previous value, just get the configured default route locale
         this._currentRouteLocale || this.validRouteLocales[0];
   }
 
