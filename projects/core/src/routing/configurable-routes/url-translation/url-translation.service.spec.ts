@@ -4,18 +4,18 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RouteRecognizerService } from './route-recognizer.service';
 import { UrlParsingService } from './url-parsing.service';
 import { UrlTranslationService } from './url-translation.service';
-import { ConfigurableRoutesService } from '../configurable-routes.service';
 import { RouteTranslation } from '../routes-config';
 import { TranslateUrlOptions } from './translate-url-options';
+import { RoutesTranslationsService } from '../routes-translations/routes-translations.service';
 
-const mockConfigurableRoutesService = {
-  getNestedRoutesTranslations: () => {}
+const mockRoutesTranslationsService = {
+  getCurrentRoutesTranslationsForNestedRoutesSequence: () => {}
 };
 
 describe('UrlTranslationService', () => {
   let service: UrlTranslationService;
   let serverConfig: ServerConfig;
-  let routesService: ConfigurableRoutesService;
+  let routesTranslationsService: RoutesTranslationsService;
   let routeRecognizer: RouteRecognizerService;
 
   beforeEach(() => {
@@ -25,8 +25,8 @@ describe('UrlTranslationService', () => {
         UrlTranslationService,
         UrlParsingService,
         {
-          provide: ConfigurableRoutesService,
-          useValue: mockConfigurableRoutesService
+          provide: RoutesTranslationsService,
+          useValue: mockRoutesTranslationsService
         },
         { provide: ServerConfig, useValue: {} },
         {
@@ -38,7 +38,7 @@ describe('UrlTranslationService', () => {
 
     service = TestBed.get(UrlTranslationService);
     serverConfig = TestBed.get(ServerConfig);
-    routesService = TestBed.get(ConfigurableRoutesService);
+    routesTranslationsService = TestBed.get(RoutesTranslationsService);
     routeRecognizer = TestBed.get(RouteRecognizerService);
   });
 
@@ -237,9 +237,10 @@ describe('UrlTranslationService', () => {
 
     describe(`, when options contain 'url' property,`, () => {
       it('should try to recognize nested routes names in given url', () => {
-        spyOn(routesService, 'getNestedRoutesTranslations').and.returnValue(
-          null
-        );
+        spyOn(
+          routesTranslationsService,
+          'getCurrentRoutesTranslationsForNestedRoutesSequence'
+        ).and.returnValue(null);
         spyOn(routeRecognizer, 'recognizeByDefaultUrl').and.returnValue(null);
         service.translate({ url: 'test-url' });
         expect(routeRecognizer.recognizeByDefaultUrl).toHaveBeenCalledWith(
@@ -248,18 +249,20 @@ describe('UrlTranslationService', () => {
       });
 
       it('should return original url if could not recognize nested routes names in given url', () => {
-        spyOn(routesService, 'getNestedRoutesTranslations').and.returnValue(
-          null
-        );
+        spyOn(
+          routesTranslationsService,
+          'getCurrentRoutesTranslationsForNestedRoutesSequence'
+        ).and.returnValue(null);
         spyOn(routeRecognizer, 'recognizeByDefaultUrl').and.returnValue(null);
         const result = service.translate({ url: 'test-url' });
         expect(result).toEqual('test-url');
       });
 
       it('should return translated url if could recognize nested routes names in given url', () => {
-        spyOn(routesService, 'getNestedRoutesTranslations').and.returnValue([
-          { paths: ['translated-url'] }
-        ]);
+        spyOn(
+          routesTranslationsService,
+          'getCurrentRoutesTranslationsForNestedRoutesSequence'
+        ).and.returnValue([{ paths: ['translated-url'] }]);
         spyOn(routeRecognizer, 'recognizeByDefaultUrl').and.returnValue([
           { name: 'testRouteName', params: {} }
         ]);
@@ -273,9 +276,10 @@ describe('UrlTranslationService', () => {
       it('should console.warn in non-production environment when no configured path matches all its parameters to given object using parameter names mapping ', () => {
         serverConfig.production = false;
         spyOn(console, 'warn');
-        spyOn(routesService, 'getNestedRoutesTranslations').and.returnValue([
-          { paths: ['path/:param1'] }
-        ]);
+        spyOn(
+          routesTranslationsService,
+          'getCurrentRoutesTranslationsForNestedRoutesSequence'
+        ).and.returnValue([{ paths: ['path/:param1'] }]);
         service.translate({
           route: [{ name: 'test', params: { param2: 'value2' } }]
         });
@@ -286,9 +290,10 @@ describe('UrlTranslationService', () => {
       it('should NOT console.warn in production environment when no configured path matches all its parameters to given object using parameter names mapping ', () => {
         serverConfig.production = true;
         spyOn(console, 'warn');
-        spyOn(routesService, 'getNestedRoutesTranslations').and.returnValue([
-          { paths: ['path/:param1'] }
-        ]);
+        spyOn(
+          routesTranslationsService,
+          'getCurrentRoutesTranslationsForNestedRoutesSequence'
+        ).and.returnValue([{ paths: ['path/:param1'] }]);
         service.translate({
           route: [{ name: 'test', params: { param2: 'value2' } }]
         });
@@ -296,9 +301,10 @@ describe('UrlTranslationService', () => {
       });
 
       it('should return absolute path', () => {
-        spyOn(routesService, 'getNestedRoutesTranslations').and.returnValue([
-          { paths: ['path/:param1'] }
-        ]);
+        spyOn(
+          routesTranslationsService,
+          'getCurrentRoutesTranslationsForNestedRoutesSequence'
+        ).and.returnValue([{ paths: ['path/:param1'] }]);
         const resultPath = service.translate({
           route: [{ name: 'test', params: { param1: 'value1' } }]
         });
@@ -314,9 +320,10 @@ describe('UrlTranslationService', () => {
         nestedRoutesTranslations: RouteTranslation[];
         expectedResult: string[];
       }) {
-        spyOn(routesService, 'getNestedRoutesTranslations').and.returnValue(
-          nestedRoutesTranslations
-        );
+        spyOn(
+          routesTranslationsService,
+          'getCurrentRoutesTranslationsForNestedRoutesSequence'
+        ).and.returnValue(nestedRoutesTranslations);
         expect(service.translate(translateUrlOptions)).toEqual(expectedResult);
       }
 

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { RoutesConfigLoader } from './routes-config-loader';
-import { UrlParsingService } from './url-translation/url-parsing.service';
+import { RoutesConfigLoader } from '../routes-config-loader';
+import { UrlParsingService } from '../url-translation/url-parsing.service';
 import { Location } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class RouteLocaleService {
@@ -34,7 +35,7 @@ export class RouteLocaleService {
   }
 
   /**
-   * Tells whether the generated links should contain a locale
+   * Returns true when generated links should contain locale, false otherwise
    */
   shouldUrlContainRouteLocale(): boolean {
     // if many route locales are in use, prefix every url with a locale, for example /en/*
@@ -46,10 +47,7 @@ export class RouteLocaleService {
   private getInitialRouteLocale(): string {
     if (Array.isArray(this.validRouteLocales)) {
       if (this.validRouteLocales.length > 1) {
-        // after every route change the currentRouteLocale should be derived from the new URL
-        this.updateCurrentRouteLocaleOnEveryRouteChange();
-
-        // use Location service not to wait for the initialization of the router.url (which is `/` on the initial application's render)
+        this.updateCurrentRouteLocaleOnCurrentUrlChange();
         return this.getRouteLocaleFromUrl(this.location.path());
       }
       if (this.validRouteLocales.length === 1) {
@@ -59,14 +57,19 @@ export class RouteLocaleService {
     return null;
   }
 
-  private updateCurrentRouteLocaleOnEveryRouteChange() {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this._currentRouteLocale = this.getRouteLocaleFromUrl(
-          event.urlAfterRedirects
-        );
-      });
+  private updateCurrentRouteLocaleOnCurrentUrlChange() {
+    this.localeInCurrentRoute$.subscribe(locale => {
+      this._currentRouteLocale = locale;
+    });
+  }
+
+  private get localeInCurrentRoute$(): Observable<string> {
+    return this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map((event: NavigationEnd) =>
+        this.getRouteLocaleFromUrl(event.urlAfterRedirects)
+      )
+    );
   }
 
   private getRouteLocaleFromUrl(url: string): string {

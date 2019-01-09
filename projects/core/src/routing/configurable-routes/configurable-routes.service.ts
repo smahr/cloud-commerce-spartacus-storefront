@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Routes, Router, Route } from '@angular/router';
 import { ServerConfig } from '../../config/server-config/server-config';
 import { RoutesTranslations } from './routes-config';
-import { RoutesTranslationsService } from './routes-translations.service';
-import { RouteLocaleService } from './route-locale.service';
+import { RoutesTranslationsService } from './routes-translations/routes-translations.service';
+import { RouteLocaleService } from './route-locale/route-locale.service';
 import { partition } from './utils/partition';
+import { RoutesTranslationsHelperService } from './routes-translations/routes-translations-helper.service';
 
 type ConfigurableRouteKey = 'cxPath' | 'cxRedirectTo';
 
@@ -14,6 +15,7 @@ export class ConfigurableRoutesService {
     private readonly config: ServerConfig,
     private readonly router: Router,
     private readonly routesTranslationsService: RoutesTranslationsService,
+    private readonly routesTranslationsHelper: RoutesTranslationsHelperService,
     private readonly routeLocaleService: RouteLocaleService
   ) {}
 
@@ -75,7 +77,7 @@ export class ConfigurableRoutesService {
     validRouteLocales: string[]
   ): Routes {
     return validRouteLocales.map(locale => {
-      const routesTranslations = this.routesTranslationsService.getAllForLocale(
+      const routesTranslations = this.routesTranslationsService.getRoutesTranslationsForLocale(
         locale
       );
 
@@ -91,14 +93,14 @@ export class ConfigurableRoutesService {
     routes: Routes,
     routeLocale: string
   ): Routes {
-    const translations = this.routesTranslationsService.getAllForLocale(
+    const translations = this.routesTranslationsService.getRoutesTranslationsForLocale(
       routeLocale
     );
     return this.translateRoutes(routes, translations, null);
   }
 
   private configureRoutesForDefault(routes: Routes) {
-    const translations = this.routesTranslationsService.getAllDefault();
+    const translations = this.routesTranslationsService.getDefaultRoutesTranslations();
     return this.translateRoutes(routes, translations, null);
   }
 
@@ -136,7 +138,7 @@ export class ConfigurableRoutesService {
   ): Routes {
     if (this.isConfigurable(route, 'cxPath')) {
       const routeName = this.getConfigurable(route, 'cxPath');
-      const routeTranslation = this.routesTranslationsService.getForRoute(
+      const routeTranslation = this.routesTranslationsHelper.getTranslation(
         routeName,
         routesTranslations
       );
@@ -238,7 +240,7 @@ export class ConfigurableRoutesService {
     routesTranslations: RoutesTranslations
   ): string[] {
     const routeName = this.getConfigurable(route, key);
-    const translation = this.routesTranslationsService.getForRoute(
+    const translation = this.routesTranslationsHelper.getTranslation(
       routeName,
       routesTranslations
     );

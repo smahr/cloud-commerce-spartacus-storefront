@@ -8,8 +8,9 @@ import { defaultConfigurableRoutesConfig } from './config/default-configurable-r
 import { UrlParsingService } from './url-translation/url-parsing.service';
 import { RouteRecognizerService } from './url-translation/route-recognizer.service';
 import { UrlTranslationService } from './url-translation/url-translation.service';
-import { RoutesTranslationsService } from './routes-translations.service';
-import { RouteLocaleService } from './route-locale.service';
+import { RoutesTranslationsService } from './routes-translations/routes-translations.service';
+import { RouteLocaleService } from './route-locale/route-locale.service';
+import { RoutesTranslationsHelperService } from './routes-translations/routes-translations-helper.service';
 
 export function loadRoutesConfig(
   loader: RoutesConfigLoader
@@ -32,6 +33,7 @@ export function loadRoutesConfig(
     RouteRecognizerService,
     UrlParsingService,
     RoutesTranslationsService,
+    RoutesTranslationsHelperService,
     RouteLocaleService,
     {
       provide: APP_INITIALIZER,

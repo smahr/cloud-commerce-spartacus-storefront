@@ -9,8 +9,8 @@ import {
   TranslateUrlOptionsRoute,
   TranslateUrlOptionsRouteObject
 } from './translate-url-options';
-import { RoutesTranslationsService } from '../routes-translations.service';
-import { RouteLocaleService } from '../route-locale.service';
+import { RoutesTranslationsService } from '../routes-translations/routes-translations.service';
+import { RouteLocaleService } from '../route-locale/route-locale.service';
 
 @Injectable()
 export class UrlTranslationService {
@@ -123,7 +123,7 @@ export class UrlTranslationService {
       nestedRoutesParams
     } = this.splitRoutesNamesAndParams(standardizedNestedRoutes);
 
-    const nestedRoutesTranslations = this.routesTranslationsService.getForNestedRoutesSequence(
+    const nestedRoutesTranslations = this.routesTranslationsService.getCurrentRoutesTranslationsForNestedRoutesSequence(
       nestedRoutesNames
     );
 

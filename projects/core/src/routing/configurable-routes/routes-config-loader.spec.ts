@@ -25,9 +25,11 @@ class MockConfigurableRoutesModuleConfig {
         page2: { paths: ['default-path2', 'default-path20'] },
         page3: { paths: ['default-path3'] }
       },
-      en: {
-        page1: { paths: ['en-path1', 'en-path10'] },
-        page2: { paths: ['en-path2'] }
+      locales: {
+        en: {
+          page1: { paths: ['en-path1', 'en-path10'] },
+          page2: { paths: ['en-path2'] }
+        }
       }
     }
   };
@@ -41,9 +43,11 @@ const mockFetchedRoutesConfig: RoutesConfig = {
         paramsMapping: { param1: 'fetched-mappedParam1' }
       }
     },
-    en: {
-      page1: {
-        paths: ['fetched-en-path1', 'fetched-en-path10']
+    locales: {
+      en: {
+        page1: {
+          paths: ['fetched-en-path1', 'fetched-en-path10']
+        }
       }
     }
   }
@@ -107,15 +111,17 @@ describe('RoutesConfigLoader', () => {
               },
               page3: { paths: ['default-path3'] }
             },
-            en: {
-              page1: {
-                paths: ['fetched-en-path1', 'fetched-en-path10'],
-                paramsMapping: { param1: 'fetched-mappedParam1' }
-              },
-              page2: {
-                paths: ['en-path2']
-              },
-              page3: { paths: ['default-path3'] }
+            locales: {
+              en: {
+                page1: {
+                  paths: ['fetched-en-path1', 'fetched-en-path10'],
+                  paramsMapping: { param1: 'fetched-mappedParam1' }
+                },
+                page2: {
+                  paths: ['en-path2']
+                },
+                page3: { paths: ['default-path3'] }
+              }
             }
           },
           fetch: true
@@ -154,13 +160,15 @@ describe('RoutesConfigLoader', () => {
                 page2: { paths: ['default-path2', 'default-path20'] },
                 page3: { paths: ['default-path3'] }
               },
-              en: {
-                page1: {
-                  paths: ['en-path1', 'en-path10'],
-                  paramsMapping: { param1: 'mappedParam1' }
-                },
-                page2: { paths: ['en-path2'] },
-                page3: { paths: ['default-path3'] }
+              locales: {
+                en: {
+                  page1: {
+                    paths: ['en-path1', 'en-path10'],
+                    paramsMapping: { param1: 'mappedParam1' }
+                  },
+                  page2: { paths: ['en-path2'] },
+                  page3: { paths: ['default-path3'] }
+                }
               }
             }
           })
