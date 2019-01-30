@@ -1,4 +1,7 @@
 <ng-container *cxOutlet="section || (templateName$ | async)">
+  <header *ngIf="showPageHeader">
+    <h1>{{ title$ | async }}</h1>
+  </header>
   <ng-content></ng-content>
   <cx-dynamic-slot
     *ngFor="let slot of (slots$ | async)"

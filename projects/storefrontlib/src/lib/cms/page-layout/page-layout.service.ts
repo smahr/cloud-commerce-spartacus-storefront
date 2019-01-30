@@ -38,6 +38,10 @@ export class PageLayoutService {
     return this.cms.getCurrentPage().pipe(filter(Boolean));
   }
 
+  get pageTitle$(): Observable<string> {
+    return this.page$.pipe(map((page: Page) => page.title));
+  }
+
   get templateName$(): Observable<string> {
     return this.page$.pipe(map((page: Page) => page.template));
   }

@@ -15,6 +15,7 @@ import { tap } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageLayoutComponent implements OnInit {
+  @Input() showPageHeader: boolean;
   @Input() section: string;
 
   constructor(
@@ -31,6 +32,10 @@ export class PageLayoutComponent implements OnInit {
 
   get slots$() {
     return this.pageLayoutService.getSlots(this.section);
+  }
+
+  get title$() {
+    return this.pageLayoutService.pageTitle$;
   }
 
   get templateName$() {
