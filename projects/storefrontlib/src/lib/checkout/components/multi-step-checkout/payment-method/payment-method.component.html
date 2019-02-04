@@ -1,5 +1,8 @@
 <ng-container
-  *ngIf="(existingPaymentMethods$ | async) as existingPaymentMethods"
+  *ngIf="
+    (existingPaymentMethods$ | async) as existingPaymentMethods;
+    else getPaid
+  "
 >
   <div class="cx-payment-method container">
     <h3 class="cx-payment-method__title d-none d-lg-block d-xl-block">
@@ -72,3 +75,9 @@
     </ng-template>
   </div>
 </ng-container>
+<ng-template #getPaid>
+  <cx-payment-form
+    (addPaymentInfo)="addNewPaymentMethod($event)"
+    (backToPayment)="hideNewPaymentForm()"
+  ></cx-payment-form>
+</ng-template>

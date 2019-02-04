@@ -24,6 +24,7 @@ export interface StorefrontRoutesTranslations {
   product?: StorefrontRouteTranslation;
   category?: StorefrontRouteTranslation;
   brand?: StorefrontRouteTranslation;
+  guest?: StorefrontRouteTranslation;
   storeFinder?: {
     paths?: string[];
     children?: {

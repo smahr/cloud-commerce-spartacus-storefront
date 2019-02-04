@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 
 import { Actions, Effect, ofType } from '@ngrx/effects';
+
 import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
-
-import { ProductImageConverterService } from '../../../product/index';
-import { LANGUAGE_CHANGE, CURRENCY_CHANGE } from '../../../site-context/index';
 
 import * as fromActions from './../actions/cart.action';
 import { CartDataService } from '../../facade/cart-data.service';
 import { OccCartService } from '../../occ/cart.service';
+import { ProductImageConverterService } from '../../../product/index';
+import { LANGUAGE_CHANGE, CURRENCY_CHANGE } from '../../../site-context/index';
 
 @Injectable()
 export class CartEffects {
@@ -87,6 +87,23 @@ export class CartEffects {
           });
         })
       );
+    })
+  );
+
+  @Effect()
+  AddEmailToCart$: Observable<any> = this.actions$.pipe(
+    ofType(fromActions.ADD_EMAIL),
+    map((action: fromActions.AddEmailCart) => action.payload),
+    mergeMap(payload => {
+      return this.occCartService
+        .addEmail(payload.userId, payload.cartId, payload.email)
+        .pipe(
+          map(() => {
+            return new fromActions.AddEmailCartSuccess({
+              email: payload.email
+            });
+          })
+        );
     })
   );
 

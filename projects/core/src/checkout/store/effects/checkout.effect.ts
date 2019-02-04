@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 
-import * as fromActions from '../actions/index';
-import * as fromUserActions from '../../../user/store/actions/index';
+import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import { Observable, of } from 'rxjs';
-import { Actions, Effect, ofType } from '@ngrx/effects';
 import { map, catchError, mergeMap, switchMap } from 'rxjs/operators';
 
+import * as fromActions from '../actions/index';
 import { OccCartService } from '../../../cart/index';
-import { OccOrderService } from '../../../user/index';
 import { GlobalMessageType, AddMessage } from '../../../global-message/index';
 import { ProductImageConverterService } from '../../../product/index';
+import { OccOrderService } from '../../../user/index';
 import { OrderEntry, PaymentDetails } from '../../../occ/occ-models/index';
+import * as fromUserActions from '../../../user/store/actions/index';
 
 @Injectable()
 export class CheckoutEffects {
@@ -26,7 +26,7 @@ export class CheckoutEffects {
           mergeMap(address => {
             address['titleCode'] = payload.address.titleCode;
             return [
-              new fromUserActions.LoadUserAddresses(payload.userId),
+              // new fromUserActions.LoadUserAddresses(payload.userId),
               new fromActions.SetDeliveryAddress({
                 userId: payload.userId,
                 cartId: payload.cartId,

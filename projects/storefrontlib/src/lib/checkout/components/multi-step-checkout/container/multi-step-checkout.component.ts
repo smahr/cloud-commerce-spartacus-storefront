@@ -5,8 +5,7 @@ import {
   OnDestroy,
   ChangeDetectorRef
 } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+
 import {
   CheckoutAddress,
   CheckoutService,
@@ -18,6 +17,9 @@ import {
   PaymentDetails,
   Address
 } from '@spartacus/core';
+
+import { Subscription, Observable } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 
 import { CheckoutNavBarItem } from './checkout-navigation-bar';
 
@@ -63,65 +65,72 @@ export class MultiStepCheckoutComponent implements OnInit, OnDestroy {
   }
 
   processSteps() {
-    // step1: set delivery address
-    this.subscriptions.push(
-      this.checkoutService
-        .getDeliveryAddress()
-        .pipe(
-          filter(
-            deliveryAddress =>
-              Object.keys(deliveryAddress).length !== 0 && this.step === 1
-          )
-        )
-        .subscribe(deliveryAddress => {
-          this.deliveryAddress = deliveryAddress;
-          this.nextStep(2);
-          this.refreshCart();
-          this.cd.detectChanges();
-        })
+    this.cart$.pipe(
+      tap(cart => {
+        console.log('in', cart);
+      })
     );
-
-    // step2: select delivery mode
-    this.subscriptions.push(
-      this.checkoutService
-        .getSelectedDeliveryModeCode()
-        .pipe(filter(selected => selected !== '' && this.step === 2))
-        .subscribe(selectedMode => {
-          this.nextStep(3);
-          this.refreshCart();
-          this.shippingMethod = selectedMode;
-          this.cd.detectChanges();
-        })
-    );
-
-    // step3: set payment information
-    this.subscriptions.push(
-      this.checkoutService
-        .getPaymentDetails()
-        .pipe(
-          filter(
-            paymentInfo =>
-              Object.keys(paymentInfo).length !== 0 && this.step === 3
+    if (false) {
+      // step1: set delivery address
+      this.subscriptions.push(
+        this.checkoutService
+          .getDeliveryAddress()
+          .pipe(
+            filter(
+              deliveryAddress =>
+                Object.keys(deliveryAddress).length !== 0 && this.step === 1
+            )
           )
-        )
-        .subscribe(paymentInfo => {
-          if (!paymentInfo['hasError']) {
-            this.nextStep(4);
-            this.paymentDetails = paymentInfo;
+          .subscribe(deliveryAddress => {
+            this.deliveryAddress = deliveryAddress;
+            this.nextStep(2);
+            this.refreshCart();
             this.cd.detectChanges();
-          } else {
-            Object.keys(paymentInfo).forEach(key => {
-              if (key.startsWith('InvalidField')) {
-                this.globalMessageService.add({
-                  type: GlobalMessageType.MSG_TYPE_ERROR,
-                  text: 'InvalidField: ' + paymentInfo[key]
-                });
-              }
-            });
-            this.checkoutService.clearCheckoutStep(3);
-          }
-        })
-    );
+          })
+      );
+
+      // step2: select delivery mode
+      this.subscriptions.push(
+        this.checkoutService
+          .getSelectedDeliveryModeCode()
+          .pipe(filter(selected => selected !== '' && this.step === 2))
+          .subscribe(selectedMode => {
+            this.nextStep(3);
+            this.refreshCart();
+            this.shippingMethod = selectedMode;
+            this.cd.detectChanges();
+          })
+      );
+
+      // step3: set payment information
+      this.subscriptions.push(
+        this.checkoutService
+          .getPaymentDetails()
+          .pipe(
+            filter(
+              paymentInfo =>
+                Object.keys(paymentInfo).length !== 0 && this.step === 3
+            )
+          )
+          .subscribe(paymentInfo => {
+            if (!paymentInfo['hasError']) {
+              this.nextStep(4);
+              this.paymentDetails = paymentInfo;
+              this.cd.detectChanges();
+            } else {
+              Object.keys(paymentInfo).forEach(key => {
+                if (key.startsWith('InvalidField')) {
+                  this.globalMessageService.add({
+                    type: GlobalMessageType.MSG_TYPE_ERROR,
+                    text: 'InvalidField: ' + paymentInfo[key]
+                  });
+                }
+              });
+              this.checkoutService.clearCheckoutStep(3);
+            }
+          })
+      );
+    }
 
     // step4: place order
     this.subscriptions.push(
@@ -166,6 +175,7 @@ export class MultiStepCheckoutComponent implements OnInit, OnDestroy {
   addAddress({ newAddress, address }) {
     if (newAddress) {
       this.checkoutService.createAndSetAddress(address);
+      this.nextStep(2);
       return;
     }
     // if the selected address is the same as the cart's one
@@ -184,6 +194,7 @@ export class MultiStepCheckoutComponent implements OnInit, OnDestroy {
       return;
     }
     this.checkoutService.setDeliveryMode(deliveryModeId);
+    this.nextStep(3);
     return;
   }
 

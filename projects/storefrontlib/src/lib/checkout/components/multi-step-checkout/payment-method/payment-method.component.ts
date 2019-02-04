@@ -8,14 +8,14 @@ import {
 } from '@angular/core';
 
 import { PaymentDetails } from '@spartacus/core';
+import { CartDataService } from '@spartacus/core';
+import { UserService } from '@spartacus/core';
 
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { CartDataService } from '@spartacus/core';
 import { masterCardImgSrc } from '../../../../ui/images/masterCard';
 import { visaImgSrc } from '../../../../ui/images/visa';
-import { UserService } from '@spartacus/core';
 import { Card } from '../../../../ui/components/card/card.component';
 
 @Component({
@@ -32,6 +32,8 @@ export class PaymentMethodComponent implements OnInit {
 
   @Input()
   selectedPayment: any;
+  @Input()
+  isAnonimous = true;
   @Output()
   backStep = new EventEmitter<any>();
   @Output()
@@ -44,23 +46,26 @@ export class PaymentMethodComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading$ = this.userService.getPaymentMethodsLoading();
-    this.userService.loadPaymentMethods(this.cartData.userId);
 
-    this.existingPaymentMethods$ = this.userService.getPaymentMethods().pipe(
-      tap(payments => {
-        if (this.cards.length === 0) {
-          payments.forEach(payment => {
-            const card = this.getCardContent(payment);
-            if (
-              this.selectedPayment &&
-              this.selectedPayment.id === payment.id
-            ) {
-              card.header = 'SELECTED';
-            }
-          });
-        }
-      })
-    );
+    if (!this.isAnonimous) {
+      this.userService.loadPaymentMethods(this.cartData.userId);
+
+      this.existingPaymentMethods$ = this.userService.getPaymentMethods().pipe(
+        tap(payments => {
+          if (this.cards.length === 0) {
+            payments.forEach(payment => {
+              const card = this.getCardContent(payment);
+              if (
+                this.selectedPayment &&
+                this.selectedPayment.id === payment.id
+              ) {
+                card.header = 'SELECTED';
+              }
+            });
+          }
+        })
+      );
+    }
   }
 
   getCardContent(payment): Card {

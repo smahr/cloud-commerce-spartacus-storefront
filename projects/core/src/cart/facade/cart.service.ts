@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 
 import { Store, select } from '@ngrx/store';
+
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-import { Cart, OrderEntry } from '../../occ/occ-models/index';
-import { AuthService, UserToken } from '../../auth/index';
-
 import * as fromAction from '../store/actions';
-import * as fromSelector from '../store/selectors';
-import { ANONYMOUS_USERID, CartDataService } from './cart-data.service';
 import { StateWithCart } from '../store/cart-state';
+import * as fromSelector from '../store/selectors';
+import { AuthService } from '../../auth/facade/auth.service';
+import { UserToken } from '../../auth/models/token-types.model';
+import { Cart, OrderEntry } from '../../occ/occ-models/index';
+
+import { ANONYMOUS_USERID, CartDataService } from './cart-data.service';
 @Injectable()
 export class CartService {
   private callback: Function;
@@ -158,6 +160,16 @@ export class CartService {
         userId: this.cartData.userId,
         cartId: this.cartData.cartId,
         entry: entry.entryNumber
+      })
+    );
+  }
+
+  addEmail(email: string): void {
+    this.store.dispatch(
+      new fromAction.AddEmailCart({
+        userId: this.cartData.userId,
+        cartId: this.cartData.cartId,
+        email: email
       })
     );
   }

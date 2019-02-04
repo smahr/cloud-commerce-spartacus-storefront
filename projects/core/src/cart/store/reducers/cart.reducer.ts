@@ -1,6 +1,6 @@
 import * as fromAction from './../actions';
-import { OrderEntry } from '../../../occ/occ-models/index';
 import { CartState } from '../cart-state';
+import { OrderEntry } from '../../../occ/occ-models/index';
 
 export const initialState: CartState = {
   content: {},
@@ -76,10 +76,19 @@ export function reducer(
       };
     }
 
+    case fromAction.ADD_EMAIL_SUCCESS: {
+      state.content.user = { uid: action.payload.email };
+      return {
+        ...state,
+        loaded: true
+      };
+    }
+
     case fromAction.REMOVE_ENTRY:
     case fromAction.ADD_ENTRY:
     case fromAction.LOAD_CART:
     case fromAction.CREATE_CART:
+    case fromAction.ADD_EMAIL:
       return {
         ...state,
         loaded: false

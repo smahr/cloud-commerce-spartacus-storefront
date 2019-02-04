@@ -18,6 +18,7 @@ export const defaultStorefrontRoutesTranslations: {
       paths: ['product/:productCode'],
       paramsMapping: { productCode: 'code' }
     },
+    guest: { paths: ['guest'] },
     category: {
       paths: ['category/:categoryCode'],
       paramsMapping: { categoryCode: 'code' }

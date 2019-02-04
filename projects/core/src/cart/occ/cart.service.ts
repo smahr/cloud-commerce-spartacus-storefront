@@ -1,5 +1,10 @@
-import { throwError, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+
+import { throwError, Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+import { InterceptorUtil, USE_CLIENT_TOKEN } from '../../occ';
 import { OccConfig } from '../../occ/config/occ-config';
 import {
   CartList,
@@ -9,10 +14,8 @@ import {
   DeliveryModeList,
   PaymentDetails
 } from '../../occ/occ-models/occ.models';
-import { CustomEncoder } from './custom.encoder';
 
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { catchError, map } from 'rxjs/operators';
+import { CustomEncoder } from './custom.encoder';
 
 // for mini cart
 const BASIC_PARAMS =
@@ -312,6 +315,26 @@ export class OccCartService {
         {
           params: { paymentDetailsId: paymentDetailsId }
         }
+      )
+      .pipe(catchError((error: any) => throwError(error.json())));
+  }
+
+  public addEmail(
+    userId: string,
+    cartId: string,
+    email: string
+  ): Observable<any> {
+    let params = new HttpParams();
+    params = params.set('email', email);
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+    headers = InterceptorUtil.createHeader(USE_CLIENT_TOKEN, true, headers);
+    return this.http
+      .put(
+        this.getCartEndpoint(userId) + cartId + '/email',
+        {},
+        { headers, params }
       )
       .pipe(catchError((error: any) => throwError(error.json())));
   }

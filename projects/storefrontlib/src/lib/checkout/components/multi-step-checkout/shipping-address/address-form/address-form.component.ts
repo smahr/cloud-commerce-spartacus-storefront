@@ -11,18 +11,18 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { Observable, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
-
 import {
   GlobalMessageService,
   GlobalMessageType,
   UserService,
   CheckoutService
 } from '@spartacus/core';
+import { Address } from '@spartacus/core';
+
+import { Observable, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { SuggestedAddressDialogComponent } from './suggested-addresses-dialog/suggested-addresses-dialog.component';
-import { Address } from '@spartacus/core';
 
 @Component({
   selector: 'cx-address-form',
@@ -175,6 +175,8 @@ export class AddressFormComponent implements OnInit, OnDestroy {
   }
 
   verifyAddress() {
+    // TODO: Remove temp
+    this.addAddress.emit(this.address.value);
     this.checkoutService.verifyAddress(this.address.value);
   }
 

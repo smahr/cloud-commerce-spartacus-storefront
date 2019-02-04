@@ -16,6 +16,7 @@ import {
 
 import { Observable } from 'rxjs';
 import { tap, filter } from 'rxjs/operators';
+
 import { Card } from '../../../../ui/components/card/card.component';
 
 @Component({
@@ -32,6 +33,8 @@ export class ShippingAddressComponent implements OnInit {
 
   @Input()
   selectedAddress: Address;
+  @Input()
+  isAnonymous = true;
   @Output()
   addAddress = new EventEmitter<any>();
 
@@ -43,24 +46,27 @@ export class ShippingAddressComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading$ = this.userService.getAddressesLoading();
-    this.userService.loadAddresses(this.cartData.userId);
 
-    this.existingAddresses$ = this.userService.getAddresses().pipe(
-      tap(addresses => {
-        if (this.cards.length === 0 && addresses) {
-          addresses.forEach(address => {
-            const card = this.getCardContent(address);
-            if (
-              this.selectedAddress &&
-              this.selectedAddress.id === address.id
-            ) {
-              card.header = 'SELECTED';
-            }
-          });
-        }
-      }),
-      filter(Boolean)
-    );
+    if (!this.isAnonymous) {
+      this.userService.loadAddresses(this.cartData.userId);
+
+      this.existingAddresses$ = this.userService.getAddresses().pipe(
+        tap(addresses => {
+          if (this.cards.length === 0 && addresses) {
+            addresses.forEach(address => {
+              const card = this.getCardContent(address);
+              if (
+                this.selectedAddress &&
+                this.selectedAddress.id === address.id
+              ) {
+                card.header = 'SELECTED';
+              }
+            });
+          }
+        }),
+        filter(Boolean)
+      );
+    }
   }
 
   getCardContent(address): Card {
@@ -104,6 +110,7 @@ export class ShippingAddressComponent implements OnInit {
   }
 
   addNewAddress(address) {
+    console.log('in');
     this.addAddress.emit({ address: address, newAddress: true });
   }
 

@@ -1,4 +1,6 @@
-<ng-container *ngIf="(existingAddresses$ | async) as existingAddresses">
+<ng-container
+  *ngIf="(existingAddresses$ | async) as existingAddresses; else guestForm"
+>
   <div class="cx-shipping-address container">
     <h3 class="cx-shipping-address__title d-none d-lg-block d-xl-block">
       Shipping Address
@@ -72,3 +74,9 @@
     </ng-template>
   </div>
 </ng-container>
+<ng-template #guestForm>
+  <cx-address-form
+    (addAddress)="addNewAddress($event)"
+    (backToAddress)="hideNewAddressForm()"
+  ></cx-address-form>
+</ng-template>
