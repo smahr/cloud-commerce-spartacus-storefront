@@ -17,6 +17,10 @@ export const LOAD_CART_SUCCESS = '[Cart] Load Cart Success';
 export const MERGE_CART = '[Cart] Merge Cart';
 export const MERGE_CART_SUCCESS = '[Cart] Merge Cart Success';
 
+export const ADD_EMAIL_TO_CART = '[Cart] Add Email to Cart';
+export const ADD_EMAIL_TO_CART_SUCCESS = '[Cart] Add Email to Cart Success';
+export const ADD_EMAIL_TO_CART_FAIL = '[Cart] Add Email to Cart Fail';
+
 export class CreateCart extends LoaderLoadAction {
   readonly type = CREATE_CART;
   constructor(public payload: any) {
@@ -70,6 +74,18 @@ export class MergeCartSuccess implements Action {
   readonly type = MERGE_CART_SUCCESS;
   constructor() {}
 }
+export class AddEmailToCart implements Action {
+  readonly type = ADD_EMAIL_TO_CART;
+  constructor(public payload: any) {}
+}
+export class AddEmailToCartSuccess implements Action {
+  readonly type = ADD_EMAIL_TO_CART_SUCCESS;
+  constructor(public payload: any) {}
+}
+export class AddEmailToCartFail implements Action {
+  readonly type = ADD_EMAIL_TO_CART_FAIL;
+  constructor(public payload: any) {}
+}
 
 export type CartAction =
   | CreateCart
@@ -79,4 +95,7 @@ export type CartAction =
   | LoadCartFail
   | LoadCartSuccess
   | MergeCart
-  | MergeCartSuccess;
+  | MergeCartSuccess
+  | AddEmailToCart
+  | AddEmailToCartSuccess
+  | AddEmailToCartFail;

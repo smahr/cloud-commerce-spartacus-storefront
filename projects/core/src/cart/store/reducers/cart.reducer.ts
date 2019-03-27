@@ -73,6 +73,15 @@ export function reducer(
         refresh: true
       };
     }
+    case fromAction.ADD_EMAIL_TO_CART_SUCCESS: {
+      const content: any = {};
+      content.user = { ...action.payload };
+      return {
+        ...state,
+        content,
+        refresh: true
+      };
+    }
   }
 
   return state;

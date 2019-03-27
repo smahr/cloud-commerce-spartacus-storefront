@@ -197,4 +197,10 @@ export class CartService {
   isEmpty(cart: Cart): boolean {
     return cart && !cart.totalItems;
   }
+
+  addEmailToCart(userId: string, cartGuid: string): void {
+    this.store.dispatch(
+      new fromAction.AddEmailToCart({ email: userId, cartGuid })
+    );
+  }
 }

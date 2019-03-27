@@ -105,6 +105,24 @@ export class CartEffects {
     })
   );
 
+  @Effect()
+  addEmailToCart$: Observable<
+    fromActions.AddEmailToCartSuccess | fromActions.AddEmailToCartFail
+  > = this.actions$.pipe(
+    ofType(fromActions.ADD_EMAIL_TO_CART),
+    map((action: fromActions.AddEmailToCart) => action.payload),
+    mergeMap(payload => {
+      console.log('GUIDS', this.cartData.cartId, payload.cartGuid);
+      return this.occCartService
+        .addEmailToCart(payload.email, payload.cartGuid)
+        .pipe(
+          switchMap(_result => [
+            new fromActions.AddEmailToCartSuccess(payload.email)
+          ]),
+          catchError(error => of(new fromActions.AddEmailToCartFail(error)))
+        );
+    })
+  );
   constructor(
     private actions$: Actions,
     private productImageConverter: ProductImageConverterService,
