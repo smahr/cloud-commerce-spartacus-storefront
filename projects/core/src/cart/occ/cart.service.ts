@@ -13,11 +13,12 @@ import { CustomEncoder } from './custom.encoder';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { OccEndpointsService } from '../../occ/services/occ-endpoints.service';
+import { ClientToken } from '../../auth';
 
 // for mini cart
 const BASIC_PARAMS =
   'DEFAULT,deliveryItemsQuantity,totalPrice(formattedValue),' +
-  'entries(totalPrice(formattedValue),product(images(FULL)))';
+  'entries(totalPrice(formattedValue),product(images(FULL))),user';
 
 // for cart details page
 const DETAILS_PARAMS =
@@ -25,7 +26,7 @@ const DETAILS_PARAMS =
   'entries(totalPrice(formattedValue),product(images(FULL),stock(FULL)),basePrice(formattedValue)),' +
   'totalPrice(formattedValue),totalItems,totalPriceWithTax(formattedValue),totalDiscounts(formattedValue),subTotal(formattedValue),' +
   'deliveryItemsQuantity,deliveryCost(formattedValue),totalTax(formattedValue),pickupItemsQuantity,net,' +
-  'appliedVouchers,productDiscounts(formattedValue)';
+  'appliedVouchers,productDiscounts(formattedValue),user';
 
 @Injectable()
 export class OccCartService {
@@ -314,8 +315,12 @@ export class OccCartService {
       .pipe(catchError((error: any) => throwError(error.json())));
   }
 
-  public addEmailToCart(userId: string, cartGuid: string): Observable<any> {
-    const token = JSON.parse(sessionStorage.auth).clientToken.value;
+  public addEmailToCart(
+    userId: string,
+    cartGuid: string,
+    token: ClientToken
+  ): Observable<any> {
+    // const token = JSON.parse(sessionStorage.auth).clientToken.value;
     const headers = new HttpHeaders({
       Authorization: `${token.token_type} ${token.access_token}`
     });

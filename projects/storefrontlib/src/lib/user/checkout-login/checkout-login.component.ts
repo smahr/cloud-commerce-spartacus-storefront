@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { CustomFormValidators } from '../../ui/validators/custom-form-validators';
-import { CartDataService, CartService } from '@spartacus/core';
+import {
+  // CartDataService,
+  CartService,
+  AuthService
+  // ClientToken
+} from '@spartacus/core';
+// import { switchMap, tap, take } from 'rxjs/operators';
 // import { CartService } from '@spartacus/core';
 @Component({
   selector: 'cx-checkout-login',
@@ -13,8 +19,9 @@ export class CheckoutLoginComponent implements OnInit {
 
   // private userService: UserService,
   constructor(
+    private auth: AuthService,
     private fb: FormBuilder,
-    private cartData: CartDataService,
+    // private cartData: CartDataService,
     private cartService: CartService
   ) {}
   // private cartService: CartService
@@ -30,10 +37,11 @@ export class CheckoutLoginComponent implements OnInit {
     });
   }
 
-  submit(): void {
+  submit() {
     const { userId, userIdConf, termsandconditions } = this.form.value;
     console.log('guest email', userId, userIdConf, termsandconditions);
-    const cartGuid = this.cartData.cartId;
-    this.cartService.addEmailToCart(userId, cartGuid);
+    return this.auth.refreshClientToken().subscribe(token => {
+      this.cartService.addEmailToCart(userId, token);
+    });
   }
 }

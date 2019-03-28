@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { Cart, OrderEntry } from '../../occ/occ-models/index';
-import { AuthService, UserToken } from '../../auth/index';
+import { AuthService, UserToken, ClientToken } from '../../auth/index';
 
 import * as fromAction from '../store/actions';
 import * as fromSelector from '../store/selectors';
@@ -198,9 +198,9 @@ export class CartService {
     return cart && !cart.totalItems;
   }
 
-  addEmailToCart(userId: string, cartGuid: string): void {
+  addEmailToCart(userId: string, token: ClientToken): void {
     this.store.dispatch(
-      new fromAction.AddEmailToCart({ email: userId, cartGuid })
+      new fromAction.AddEmailToCart({ email: userId, token })
     );
   }
 }

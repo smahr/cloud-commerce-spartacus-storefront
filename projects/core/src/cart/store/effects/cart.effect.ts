@@ -107,17 +107,23 @@ export class CartEffects {
 
   @Effect()
   addEmailToCart$: Observable<
-    fromActions.AddEmailToCartSuccess | fromActions.AddEmailToCartFail
+    | fromActions.AddEmailToCartSuccess
+    | fromActions.AddEmailToCartFail
+    | fromActions.LoadCart
   > = this.actions$.pipe(
     ofType(fromActions.ADD_EMAIL_TO_CART),
     map((action: fromActions.AddEmailToCart) => action.payload),
     mergeMap(payload => {
-      console.log('GUIDS', this.cartData.cartId, payload.cartGuid);
+      console.log('GUID, token', this.cartData.cartId, payload.token);
       return this.occCartService
-        .addEmailToCart(payload.email, payload.cartGuid)
+        .addEmailToCart(payload.email, this.cartData.cartId, payload.token)
         .pipe(
           switchMap(_result => [
-            new fromActions.AddEmailToCartSuccess(payload.email)
+            new fromActions.AddEmailToCartSuccess(payload.email),
+            new fromActions.LoadCart({
+              userId: 'anonymous',
+              cartId: this.cartData.cartId
+            })
           ]),
           catchError(error => of(new fromActions.AddEmailToCartFail(error)))
         );
