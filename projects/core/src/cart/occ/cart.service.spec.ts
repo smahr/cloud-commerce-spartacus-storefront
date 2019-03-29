@@ -16,6 +16,7 @@ import {
 import { ProductImageConverterService } from '../../product';
 
 import { OccCartService } from './cart.service';
+import { ClientToken } from '../../auth';
 
 const userId = '123';
 const cartId = '456';
@@ -41,14 +42,14 @@ const usersEndpoint = '/users';
 const cartsEndpoint = '/carts/';
 const BASIC_PARAMS =
   'DEFAULT,deliveryItemsQuantity,totalPrice(formattedValue),' +
-  'entries(totalPrice(formattedValue),product(images(FULL)))';
+  'entries(totalPrice(formattedValue),product(images(FULL))),user';
 
 const DETAILS_PARAMS =
   'DEFAULT,potentialProductPromotions,appliedProductPromotions,potentialOrderPromotions,appliedOrderPromotions,' +
   'entries(totalPrice(formattedValue),product(images(FULL),stock(FULL)),basePrice(formattedValue)),' +
   'totalPrice(formattedValue),totalItems,totalPriceWithTax(formattedValue),totalDiscounts(formattedValue),subTotal(formattedValue),' +
   'deliveryItemsQuantity,deliveryCost(formattedValue),totalTax(formattedValue),pickupItemsQuantity,net,' +
-  'appliedVouchers,productDiscounts(formattedValue)';
+  'appliedVouchers,productDiscounts(formattedValue),user';
 
 const MockOccModuleConfig: OccConfig = {
   server: {
@@ -628,6 +629,37 @@ describe('OccCartService', () => {
       expect(mockReq.request.params.get('paymentDetailsId')).toEqual('123');
       expect(mockReq.request.responseType).toEqual('json');
       mockReq.flush(cartData);
+    });
+  });
+  xdescribe('guest login, anonymous user', () => {
+    it('should add email to cart for given cart id, email and client token', () => {
+      const token: ClientToken = {
+        access_token: 'mockToken',
+        token_type: 'bearer',
+        expires_in: 123,
+        scope: 'mockScope'
+      };
+      const email = 'test-email@example.com';
+      service.addEmailToCart(email, cartId, token).subscribe(result => {
+        console.log(result);
+      });
+
+      const mockReq = httpMock.expectOne(req => {
+        return (
+          req.method === 'PUT' &&
+          req.url ===
+            usersEndpoint +
+              '/anonymous' +
+              cartsEndpoint +
+              cartId +
+              `/email?email=${email}`
+        );
+      });
+
+      expect(mockReq.cancelled).toBeFalsy();
+      expect(mockReq.request.params.get('email')).toEqual(email);
+      // expect(mockReq.request.responseType).toEqual('json');
+      mockReq.flush({});
     });
   });
 });

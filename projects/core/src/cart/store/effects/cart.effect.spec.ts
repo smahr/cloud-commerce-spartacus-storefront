@@ -19,6 +19,7 @@ import * as fromAuth from '../../../auth/store/index';
 import * as fromUser from '../../../user/store/index';
 
 import * as fromEffects from './cart.effect';
+import { ClientToken } from 'projects/core/src/auth';
 
 describe('Cart effect', () => {
   let cartService: OccCartService;
@@ -120,6 +121,22 @@ describe('Cart effect', () => {
       const expected = cold('-b', { b: completion });
 
       expect(cartEffects.mergeCart$).toBeObservable(expected);
+    });
+  });
+
+  xdescribe('guest login, anonymous user', () => {
+    it('should add email to cart', () => {
+      const email = 'test-email@example.com';
+      const token: ClientToken = {
+        access_token: 'mockToken',
+        token_type: 'bearer',
+        expires_in: 123,
+        scope: 'mockScope'
+      };
+      const action = new fromActions.AddEmailToCart({
+        email,
+        token
+      });
     });
   });
 });

@@ -399,4 +399,10 @@ describe('CartService', () => {
       expect(result).toEqual(cart);
     });
   });
+
+  xdescribe('guest login, anonymous user', () => {
+    it('should return the cart state with guest login user object', () => {
+      // todo
+    });
+  });
 });
