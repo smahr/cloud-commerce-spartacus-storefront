@@ -23,9 +23,9 @@ export class CheckoutLoginComponent implements OnInit, OnDestroy {
       userId: ['', [Validators.required, CustomFormValidators.emailValidator]],
       userIdConf: [
         '',
-        [Validators.required, CustomFormValidators.emailValidator]
+        [Validators.required, CustomFormValidators.emailValidator],
       ],
-      termsandconditions: [Validators.requiredTrue]
+      termsandconditions: [Validators.requiredTrue],
     });
   }
 

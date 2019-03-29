@@ -122,8 +122,8 @@ export class CartEffects {
             new fromActions.AddEmailToCartSuccess(payload.email),
             new fromActions.LoadCart({
               userId: 'anonymous',
-              cartId: this.cartData.cartId
-            })
+              cartId: this.cartData.cartId,
+            }),
           ]),
           catchError(error => of(new fromActions.AddEmailToCartFail(error)))
         );

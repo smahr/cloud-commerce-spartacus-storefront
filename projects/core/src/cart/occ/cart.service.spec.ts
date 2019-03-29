@@ -637,7 +637,7 @@ describe('OccCartService', () => {
         access_token: 'mockToken',
         token_type: 'bearer',
         expires_in: 123,
-        scope: 'mockScope'
+        scope: 'mockScope',
       };
       const email = 'test-email@example.com';
       service.addEmailToCart(email, cartId, token).subscribe(result => {

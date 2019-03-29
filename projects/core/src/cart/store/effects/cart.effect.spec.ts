@@ -131,11 +131,11 @@ describe('Cart effect', () => {
         access_token: 'mockToken',
         token_type: 'bearer',
         expires_in: 123,
-        scope: 'mockScope'
+        scope: 'mockScope',
       };
       const action = new fromActions.AddEmailToCart({
         email,
-        token
+        token,
       });
     });
   });

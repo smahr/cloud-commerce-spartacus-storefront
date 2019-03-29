@@ -322,7 +322,7 @@ export class OccCartService {
   ): Observable<any> {
     // const token = JSON.parse(sessionStorage.auth).clientToken.value;
     const headers = new HttpHeaders({
-      Authorization: `${token.token_type} ${token.access_token}`
+      Authorization: `${token.token_type} ${token.access_token}`,
     });
     return this.http.put(
       this.getCartEndpoint('anonymous') + cartGuid + '/email?email=' + userId,
