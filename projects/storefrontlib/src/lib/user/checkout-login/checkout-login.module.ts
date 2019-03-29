@@ -11,13 +11,13 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     ConfigModule.withConfig(<CmsConfig>{
       cmsComponents: {
         GuestCheckoutLoginComponent: {
-          selector: 'cx-checkout-login'
-        }
-      }
-    })
+          selector: 'cx-checkout-login',
+        },
+      },
+    }),
   ],
   declarations: [CheckoutLoginComponent],
   exports: [CheckoutLoginComponent],
-  entryComponents: [CheckoutLoginComponent]
+  entryComponents: [CheckoutLoginComponent],
 })
 export class CheckoutLoginModule {}
