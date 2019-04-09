@@ -41,9 +41,11 @@ describe('Cart effect', () => {
   };
 
   const MockOccModuleConfig: OccConfig = {
-    server: {
-      baseUrl: '',
-      occPrefix: '',
+    backend: {
+      occ: {
+        baseUrl: '',
+        prefix: '',
+      },
     },
   };
 

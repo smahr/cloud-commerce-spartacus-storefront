@@ -52,11 +52,12 @@ const DETAILS_PARAMS =
   'appliedVouchers,productDiscounts(formattedValue),user';
 
 const MockOccModuleConfig: OccConfig = {
-  server: {
-    baseUrl: '',
-    occPrefix: '',
+  backend: {
+    occ: {
+      baseUrl: '',
+      prefix: '',
+    },
   },
-
   site: {
     baseSite: '',
   },
