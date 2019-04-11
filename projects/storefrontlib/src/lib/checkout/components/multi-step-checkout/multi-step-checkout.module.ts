@@ -21,6 +21,7 @@ import { CheckoutOrderSummaryModule } from './checkout-order-summary/checkout-or
 import { CheckoutOrchestratorModule } from './checkout-orchestrator/checkout-orchestrator.module';
 import { ExpressButtonModule } from './express-button/express-button.module';
 import { ExpressCheckoutModule } from './express-checkout/express-checkout.module';
+import { CheckoutProgressModule } from './checkout-progress/checkout-progress.module';
 
 @NgModule({
   imports: [
@@ -37,6 +38,7 @@ import { ExpressCheckoutModule } from './express-checkout/express-checkout.modul
     RouterModule,
     UrlTranslationModule,
     CheckoutOrchestratorModule,
+    CheckoutProgressModule,
     ConfigModule.withConfig(<CmsConfig>{
       cmsComponents: {
         MultiStepCheckoutComponent: { selector: 'cx-multi-step-checkout' },

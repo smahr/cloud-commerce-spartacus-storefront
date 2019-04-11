@@ -17,6 +17,6 @@ export class CheckoutGuard implements CanActivate {
     if (route.queryParams.express) {
       return of(this.router.parseUrl('/checkout/express'));
     }
-    return of(this.router.parseUrl(this.config.checkout.steps[0]));
+    return of(this.router.parseUrl(this.config.checkout.steps[0].url));
   }
 }
