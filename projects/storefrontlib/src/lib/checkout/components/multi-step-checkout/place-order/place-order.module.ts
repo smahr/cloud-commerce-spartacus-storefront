@@ -9,7 +9,9 @@ import {
   I18nModule,
   ConfigModule,
   CmsConfig,
+  AuthGuard,
 } from '@spartacus/core';
+import { CartNotEmptyGuard } from 'projects/storefrontlib/src/lib/ui/pages/guards';
 
 @NgModule({
   imports: [
@@ -22,6 +24,7 @@ import {
       cmsComponents: {
         MultistepCheckoutPlaceOrder: {
           selector: 'cx-place-order',
+          guards: [AuthGuard, CartNotEmptyGuard],
         },
       },
     }),

@@ -11,7 +11,9 @@ import {
   ConfigModule,
   CmsConfig,
   I18nModule,
+  AuthGuard,
 } from '@spartacus/core';
+import { CartNotEmptyGuard } from 'projects/storefrontlib/src/lib/ui/pages/guards';
 
 @NgModule({
   imports: [
@@ -25,6 +27,7 @@ import {
       cmsComponents: {
         MultistepCheckoutPaymentDetails: {
           selector: 'cx-payment-method',
+          guards: [AuthGuard, CartNotEmptyGuard],
         },
       },
     }),

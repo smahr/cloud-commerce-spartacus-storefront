@@ -3,7 +3,6 @@ import {
   RoutingService,
   UserService,
   CheckoutService,
-  AuthService,
   CartDataService,
 } from '@spartacus/core';
 
