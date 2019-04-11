@@ -23,6 +23,10 @@ export const headerComponents: {
     typeCode: 'BreadcrumbComponent',
     flexType: 'BreadcrumbComponent',
   },
+  expressButtonComponent: {
+    typeCode: 'ExpressCheckoutButton',
+    flexType: 'ExpressCheckoutButton',
+  },
 };
 
 export const defaultPageHeaderConfig: CmsPageSlotsConfig = {
@@ -34,5 +38,8 @@ export const defaultPageHeaderConfig: CmsPageSlotsConfig = {
   },
   BottomHeaderSlot: {
     componentIds: ['breadcrumbComponent'],
+  },
+  MiniCart2: {
+    componentIds: ['expressButtonComponent'],
   },
 };

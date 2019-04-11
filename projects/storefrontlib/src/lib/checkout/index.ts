@@ -11,3 +11,5 @@ export * from './components/multi-step-checkout/delivery-mode/delivery-mode.comp
 export * from './components/multi-step-checkout/container/multi-step-checkout.component';
 export * from './components/multi-step-checkout/checkout-orchestrator/checkout-orchestrator.component';
 export * from './components/order-confirmation/order-confirmation.component';
+export * from './components/multi-step-checkout/express-button/express-button.module';
+export * from './components/multi-step-checkout/express-button/express-button.component';

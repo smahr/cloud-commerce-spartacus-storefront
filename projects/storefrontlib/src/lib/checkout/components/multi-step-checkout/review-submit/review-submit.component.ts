@@ -41,6 +41,12 @@ export class ReviewSubmitComponent implements OnInit {
     this.deliveryAddress$ = this.checkoutService.getDeliveryAddress();
     this.paymentDetails$ = this.checkoutService.getPaymentDetails();
 
+    this.cart$.pipe(
+      tap(cart => {
+        this.checkoutService.loadCheckoutDetails(cart.user.uid, cart.guid);
+      })
+    );
+
     this.deliveryMode$ = this.checkoutService.getSelectedDeliveryMode().pipe(
       tap((selected: DeliveryMode) => {
         if (selected === null) {

@@ -7,6 +7,8 @@ import {
   UrlTranslationModule,
   CheckoutModule,
   I18nModule,
+  ConfigModule,
+  CmsConfig,
 } from '@spartacus/core';
 
 @NgModule({
@@ -16,8 +18,16 @@ import {
     RouterModule,
     UrlTranslationModule,
     I18nModule,
+    ConfigModule.withConfig(<CmsConfig>{
+      cmsComponents: {
+        MultistepCheckoutPlaceOrder: {
+          selector: 'cx-place-order',
+        },
+      },
+    }),
   ],
   declarations: [PlaceOrderComponent],
+  entryComponents: [PlaceOrderComponent],
   exports: [PlaceOrderComponent],
 })
 export class PlaceOrderModule {}

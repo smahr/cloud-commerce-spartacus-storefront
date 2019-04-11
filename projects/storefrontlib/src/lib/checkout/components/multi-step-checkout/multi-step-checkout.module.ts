@@ -19,11 +19,15 @@ import { CartSharedModule } from '../../../cart/cart-shared/cart-shared.module';
 import { PlaceOrderModule } from './place-order/place-order.module';
 import { CheckoutOrderSummaryModule } from './checkout-order-summary/checkout-order-summary.module';
 import { CheckoutOrchestratorModule } from './checkout-orchestrator/checkout-orchestrator.module';
+import { ExpressButtonModule } from './express-button/express-button.module';
+import { ExpressCheckoutModule } from './express-checkout/express-checkout.module';
 
 @NgModule({
   imports: [
     CommonModule,
     CartSharedModule,
+    ExpressButtonModule,
+    ExpressCheckoutModule,
     ShippingAddressModule,
     DeliveryModeModule,
     PaymentMethodModule,
