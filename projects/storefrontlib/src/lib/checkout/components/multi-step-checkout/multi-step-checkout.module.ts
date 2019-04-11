@@ -17,6 +17,8 @@ import { ReviewSubmitModule } from './review-submit/review-submit.module';
 import { MultiStepCheckoutComponent } from './container/multi-step-checkout.component';
 import { CartSharedModule } from '../../../cart/cart-shared/cart-shared.module';
 import { PlaceOrderModule } from './place-order/place-order.module';
+import { CheckoutOrderSummaryModule } from './checkout-order-summary/checkout-order-summary.module';
+import { CheckoutOrchestratorModule } from './checkout-orchestrator/checkout-orchestrator.module';
 
 @NgModule({
   imports: [
@@ -26,9 +28,11 @@ import { PlaceOrderModule } from './place-order/place-order.module';
     DeliveryModeModule,
     PaymentMethodModule,
     ReviewSubmitModule,
+    CheckoutOrderSummaryModule,
     PlaceOrderModule,
     RouterModule,
     UrlTranslationModule,
+    CheckoutOrchestratorModule,
     ConfigModule.withConfig(<CmsConfig>{
       cmsComponents: {
         MultiStepCheckoutComponent: { selector: 'cx-multi-step-checkout' },

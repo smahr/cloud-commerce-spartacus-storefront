@@ -16,9 +16,7 @@
 // } from '@spartacus/core';
 
 // import { BehaviorSubject, Observable, of } from 'rxjs';
-
 // import createSpy = jasmine.createSpy;
-
 // import { MultiStepCheckoutComponent } from './multi-step-checkout.component';
 
 // class MockCheckoutService {
@@ -87,6 +85,13 @@
 //   selectedPayment: PaymentDetails;
 // }
 
+// // *** From FR2
+// @Component({ selector: 'cx-checkout-order-summary', template: '' })
+// class MockCheckoutOrderSummaryComponent {
+//   @Input()
+//   cart: Cart;
+// }
+// // ***
 // @Component({ selector: 'cx-review-submit', template: '' })
 // class MockReviewSubmitComponent {
 //   @Input()
@@ -171,6 +176,9 @@
 //         MockReviewSubmitComponent,
 //         MockShippingAddressComponent,
 //         MockOrderSummaryComponent,
+//         // *** FROM FR2
+//         MockCheckoutOrderSummaryComponent,
+//         // ***
 //       ],
 //       providers: [
 //         { provide: CheckoutService, useClass: MockCheckoutService },
