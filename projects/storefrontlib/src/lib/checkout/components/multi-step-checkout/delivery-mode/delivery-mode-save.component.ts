@@ -57,13 +57,6 @@ export class DeliveryModeSaveComponent implements OnInit {
 
   next(): void {
     this.setDeliveryMode(this.mode.value.deliveryModeId);
-    if (this.currentDeliveryModeId) {
-      this.goToStep.emit(3);
-    }
-  }
-
-  back(): void {
-    this.goToStep.emit(1);
   }
 
   get deliveryModeInvalid(): boolean {

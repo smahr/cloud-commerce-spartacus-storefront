@@ -7,10 +7,12 @@ import {
 } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 
-import { DeliveryMode, CheckoutService } from '@spartacus/core';
+import { DeliveryMode, CheckoutService, RoutingService } from '@spartacus/core';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CheckoutConfig } from '../../../config/checkout-config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cx-delivery-mode',
@@ -25,6 +27,7 @@ export class DeliveryModeComponent implements OnInit {
   supportedDeliveryModes$: Observable<DeliveryMode[]>;
   selectedDeliveryMode$: Observable<DeliveryMode>;
   currentDeliveryModeId: string;
+  goTo = null;
 
   mode: FormGroup = this.fb.group({
     deliveryModeId: ['', Validators.required],
@@ -32,7 +35,10 @@ export class DeliveryModeComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private checkoutService: CheckoutService
+    private checkoutService: CheckoutService,
+    protected routingService: RoutingService,
+    protected config: CheckoutConfig,
+    protected router: Router
   ) {}
 
   ngOnInit() {
@@ -52,18 +58,42 @@ export class DeliveryModeComponent implements OnInit {
           this.mode.controls['deliveryModeId'].setValue(code);
           this.currentDeliveryModeId = code;
         }
+        if (this.goTo === true) {
+          this.nextStep();
+          this.goTo = null;
+        }
       });
+  }
+
+  nextStep() {
+    const currentUrl = this.router.url;
+    let currentIndex = 0;
+    this.config.checkout.steps.forEach((step, index) => {
+      if (currentUrl.includes(step.url)) {
+        currentIndex = index;
+      }
+    });
+    this.routingService.go([this.config.checkout.steps[currentIndex + 1].url]);
+  }
+
+  prevStep() {
+    const currentUrl = this.router.url;
+    let currentIndex = 0;
+    this.config.checkout.steps.forEach((step, index) => {
+      if (currentUrl.includes(step.url)) {
+        currentIndex = index;
+      }
+    });
+    this.routingService.go([this.config.checkout.steps[currentIndex - 1].url]);
   }
 
   next(): void {
     this.setDeliveryMode(this.mode.value.deliveryModeId);
-    if (this.currentDeliveryModeId) {
-      this.goToStep.emit(3);
-    }
+    this.goTo = true;
   }
 
   back(): void {
-    this.goToStep.emit(1);
+    this.prevStep();
   }
 
   get deliveryModeInvalid(): boolean {
@@ -76,6 +106,8 @@ export class DeliveryModeComponent implements OnInit {
       this.currentDeliveryModeId !== deliveryModeId
     ) {
       this.checkoutService.setDeliveryMode(deliveryModeId);
+    } else {
+      this.nextStep();
     }
   }
 }

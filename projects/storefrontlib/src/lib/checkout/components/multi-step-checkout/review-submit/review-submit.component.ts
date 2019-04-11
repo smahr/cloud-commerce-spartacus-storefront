@@ -70,7 +70,10 @@ export class ReviewSubmitComponent implements OnInit {
 
   getShippingAddressCard(deliveryAddress: Address, countryName: string): Card {
     if (!countryName) {
-      countryName = deliveryAddress.country.isocode;
+      countryName =
+        deliveryAddress &&
+        deliveryAddress.country &&
+        deliveryAddress.country.isocode;
     }
 
     let region = '';

@@ -68,10 +68,32 @@ if (!environment.production) {
         resources: translations,
       },
       cmsComponents: {
-        // MultistepCheckoutPaymentDetailsWithDelivery: {
-        //   selector: 'cx-payment-method',
-        //   guards: [AuthGuard, CartNotEmptyGuard],
-        // },
+        MultistepCheckoutPaymentDetailsWithDelivery: {
+          selector: 'cx-payment-method',
+          // guards: [AuthGuard, CartNotEmptyGuard],
+        },
+      },
+      checkout: {
+        steps: [
+          {
+            id: 'shippingAddress',
+            name: 'checkoutProgress.label.shippingAddress',
+            url: '/checkout/shipping-address',
+            type: ['shippingAddress'],
+          },
+          {
+            id: 'deliveryMode',
+            name: 'checkoutProgress.label.deliveryModeWithPayment',
+            url: '/checkout/delivery-and-payment',
+            type: ['deliveryMode', 'paymentDetails'],
+          },
+          {
+            id: 'reviewOrder',
+            name: 'checkoutProgress.label.reviewOrder',
+            url: '/checkout/review-order',
+            type: ['reviewOrder'],
+          },
+        ],
       },
     }),
 

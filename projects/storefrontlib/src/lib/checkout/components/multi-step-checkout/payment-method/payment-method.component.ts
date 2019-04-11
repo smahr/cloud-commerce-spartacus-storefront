@@ -13,6 +13,7 @@ import {
   CheckoutService,
   GlobalMessageService,
   GlobalMessageType,
+  RoutingService,
 } from '@spartacus/core';
 import { CartDataService } from '@spartacus/core';
 import { UserService } from '@spartacus/core';
@@ -23,6 +24,8 @@ import { tap, filter } from 'rxjs/operators';
 import { masterCardImgSrc } from '../../../../ui/images/masterCard';
 import { visaImgSrc } from '../../../../ui/images/visa';
 import { Card } from '../../../../ui/components/card/card.component';
+import { CheckoutConfig } from '../../../config/checkout-config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cx-payment-method',
@@ -50,7 +53,10 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
     protected cartData: CartDataService,
     protected userService: UserService,
     protected checkoutService: CheckoutService,
-    protected globalMessageService: GlobalMessageService
+    protected globalMessageService: GlobalMessageService,
+    protected routingService: RoutingService,
+    protected config: CheckoutConfig,
+    protected router: Router
   ) {}
 
   ngOnInit() {
@@ -91,6 +97,28 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
           this.checkoutService.clearCheckoutStep(3);
         }
       });
+  }
+
+  nextStep() {
+    const currentUrl = this.router.url;
+    let currentIndex = 0;
+    this.config.checkout.steps.forEach((step, index) => {
+      if (currentUrl.includes(step.url)) {
+        currentIndex = index;
+      }
+    });
+    this.routingService.go([this.config.checkout.steps[currentIndex + 1].url]);
+  }
+
+  prevStep() {
+    const currentUrl = this.router.url;
+    let currentIndex = 0;
+    this.config.checkout.steps.forEach((step, index) => {
+      if (currentUrl.includes(step.url)) {
+        currentIndex = index;
+      }
+    });
+    this.routingService.go([this.config.checkout.steps[currentIndex - 1].url]);
   }
 
   getCardContent(payment: PaymentDetails): Card {
@@ -144,7 +172,8 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
   }
 
   back(): void {
-    this.backStep.emit();
+    // this.backStep.emit();
+    this.prevStep();
   }
 
   addNewPaymentMethod({
@@ -194,8 +223,8 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
       .getPaymentDetails()
       .subscribe(data => {
         if (data.accountHolderName && data.cardNumber) {
-          this.goToStep.emit(4);
-
+          // this.goToStep.emit(4);
+          this.nextStep();
           return;
         }
       });

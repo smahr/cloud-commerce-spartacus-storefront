@@ -18,6 +18,8 @@ import {
   CartService,
 } from '@spartacus/core';
 import { Card } from '../../../../ui/components/card/card.component';
+import { CheckoutConfig } from '../../../config/checkout-config';
+import { Router } from '@angular/router';
 
 export interface CardWithAddress {
   card: Card;
@@ -53,8 +55,21 @@ export class ShippingAddressComponent implements OnInit, OnDestroy {
     protected cartData: CartDataService,
     protected cartService: CartService,
     protected routingService: RoutingService,
-    protected checkoutService: CheckoutService
+    protected checkoutService: CheckoutService,
+    protected config: CheckoutConfig,
+    protected router: Router
   ) {}
+
+  nextStep() {
+    const currentUrl = this.router.url;
+    let currentIndex = 0;
+    this.config.checkout.steps.forEach((step, index) => {
+      if (currentUrl.includes(step.url)) {
+        currentIndex = index;
+      }
+    });
+    this.routingService.go([this.config.checkout.steps[currentIndex + 1].url]);
+  }
 
   ngOnInit() {
     this.goTo = null;
@@ -67,7 +82,7 @@ export class ShippingAddressComponent implements OnInit, OnDestroy {
         this.setAddress = address;
         this.selectedAddress$.next(address);
         if (this.goTo) {
-          this.goToStep.emit(this.goTo);
+          this.nextStep();
           this.goTo = null;
         }
       });
@@ -142,7 +157,7 @@ export class ShippingAddressComponent implements OnInit, OnDestroy {
       this.selectedAddress &&
       this.setAddress.id === this.selectedAddress.id
     ) {
-      this.goToStep.emit(2);
+      this.nextStep();
     } else {
       this.goTo = 2;
       this.checkoutService.setDeliveryAddress(address);
