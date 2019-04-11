@@ -9,7 +9,7 @@ import { PageLayoutComponent } from '../../cms/page-layout/page-layout.component
 import { PageLayoutModule } from '../../cms/page-layout/page-layout.module';
 import { CartPageModule } from './cart-page/cart-page.module';
 import { HardcodedCheckoutComponent } from './checkout-page.interceptor';
-import { CartNotEmptyGuard } from './guards/cart-not-empty.guard';
+// import { CartNotEmptyGuard } from './guards/cart-not-empty.guard';
 import { GuardsModule } from './guards/guards.module';
 import { OrderConfirmationPageModule } from './order-confirmation-page/order-confirmation-page.module';
 import { ProductPageModule } from './product-page/product-page.module';
@@ -55,12 +55,12 @@ const pageModules = [
         component: PageLayoutComponent,
         data: { pageLabel: 'orders', cxPath: 'orders' },
       },
-      {
-        path: null,
-        canActivate: [AuthGuard, CmsPageGuard, CartNotEmptyGuard],
-        component: PageLayoutComponent,
-        data: { pageLabel: 'multiStepCheckoutSummaryPage', cxPath: 'checkout' },
-      },
+      // {
+      //   path: null,
+      //   canActivate: [AuthGuard, CmsPageGuard, CartNotEmptyGuard],
+      //   component: PageLayoutComponent,
+      //   data: { pageLabel: 'multiStepCheckoutSummaryPage', cxPath: 'checkout' },
+      // },
       {
         path: null,
         canActivate: [NotAuthGuard, CmsPageGuard],

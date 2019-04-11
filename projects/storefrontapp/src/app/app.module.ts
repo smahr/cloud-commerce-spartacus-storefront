@@ -67,6 +67,12 @@ if (!environment.production) {
       i18n: {
         resources: translations,
       },
+      cmsComponents: {
+        // MultistepCheckoutPaymentDetailsWithDelivery: {
+        //   selector: 'cx-payment-method',
+        //   guards: [AuthGuard, CartNotEmptyGuard],
+        // },
+      },
     }),
 
     ConfigModule.withConfigFactory(defaultCmsContentConfig),

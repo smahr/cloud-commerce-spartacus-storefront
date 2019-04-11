@@ -10,6 +10,7 @@ export const common = {
       cancel: 'Cancel',
       delete: 'Delete',
       remove: 'Remove',
+      save: 'Save',
       edit: 'Edit',
       setAsDefault: 'Set as default',
       back: 'Back',
