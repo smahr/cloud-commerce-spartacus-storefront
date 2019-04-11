@@ -6,7 +6,12 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AuthService, RoutingService, UserToken } from '@spartacus/core';
+import {
+  AuthService,
+  RoutingService,
+  UserToken,
+  CartService,
+} from '@spartacus/core';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +21,8 @@ export class CheckoutGuard implements CanActivate {
 
   constructor(
     private routingService: RoutingService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cartService: CartService
   ) {}
 
   canActivate(
@@ -26,9 +32,17 @@ export class CheckoutGuard implements CanActivate {
     return this.authService.getUserToken().pipe(
       map((token: UserToken) => {
         if (!token.access_token) {
-          this.routingService.go({ route: ['login'] }, { forced: true });
-          this.routingService.saveRedirectUrl(state.url);
+          this.cartService.getActive().pipe(
+            map(cart => {
+              if (cart.user.name === 'guest' && cart.user.uid) {
+                this.routingService.go({ route: ['login'] }, { forced: true });
+              } else {
+                this.routingService.go({ route: ['login'] });
+              }
+            })
+          );
         }
+        this.routingService.saveRedirectUrl(state.url);
         return !!token.access_token;
       })
     );

@@ -66,9 +66,19 @@ export function reducer(
       };
     }
 
+    case fromAction.ADD_EMAIL_TO_CART_SUCCESS: {
+      const content = { ...action.payload };
+      console.log('reducer ', content);
+      state.content.cart.user = content.user;
+      return {
+        ...state,
+        content,
+        refresh: false,
+      };
+    }
+
     case fromAction.REMOVE_ENTRY_SUCCESS:
     case fromAction.UPDATE_ENTRY_SUCCESS:
-    case fromAction.ADD_EMAIL_TO_CART_SUCCESS:
     case fromAction.ADD_ENTRY_SUCCESS: {
       return {
         ...state,
