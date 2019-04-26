@@ -27,7 +27,7 @@ export interface PageDescriptionResolver {
  * for social sharing (using `og:image` metatag)
  */
 export interface PageImageResolver {
-  resolveImage(...args): string;
+  resolveImage(...args);
 }
 
 /**

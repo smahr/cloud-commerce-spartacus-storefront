@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { TranslationService } from '../translation.service';
+import { Observable, combineLatest } from 'rxjs';
+import { TranslationService, TranslateArgument } from '../translation.service';
 import i18next from 'i18next';
 import { I18nConfig } from '../config/i18n-config';
 import { TranslationChunkService } from '../translation-chunk.service';
@@ -53,6 +53,23 @@ export class I18nextTranslationService implements TranslationService {
       i18next.on('languageChanged', translate);
       return () => i18next.off('languageChanged', translate);
     });
+  }
+
+  translateMany(
+    translationCommands: (
+      | string
+      | {
+          key: string;
+          params?: any;
+          whitespaceUntilLoaded?: boolean;
+        })[]
+  ): Observable<string[]> {
+    const results = (translationCommands || [])
+      .map(translation =>
+        typeof translation === 'string' ? { key: translation } : translation
+      )
+      .map(t => this.translate(t.key, t.params, t.whitespaceUntilLoaded));
+    return combineLatest(results);
   }
 
   loadChunks(chunkNames: string | string[]): Promise<any> {

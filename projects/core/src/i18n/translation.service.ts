@@ -16,6 +16,16 @@ export abstract class TranslationService {
     whitespaceUntilLoaded?: boolean
   ) => Observable<string>;
 
+  translateMany: (
+    translationCommands: (
+      | string
+      | {
+          key: string;
+          params?: any;
+          whitespaceUntilLoaded?: boolean;
+        })[]
+  ) => Observable<string[]>;
+
   /**
    * Loads chunks with translations
    *

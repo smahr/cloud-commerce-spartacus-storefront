@@ -1,24 +1,49 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
+// SPIKE NEW:
+import { Translation } from '@spartacus/core';
+
 export interface CardAction {
   event: string;
-  name: string;
+  name: Translation | string;
 }
 
 export interface CardLinkAction {
   link: string;
-  name: string;
+  name: Translation | string;
 }
 
 export interface Card {
-  header?: string;
-  title?: string;
-  textBold?: string;
-  text?: Array<string>;
+  header?: Translation | string;
+  title?: Translation | string;
+  textBold?: Translation | string;
+  text?: Array<Translation | string>;
   img?: string;
   actions?: Array<CardAction | CardLinkAction>;
-  deleteMsg?: string;
+  deleteMsg?: Translation | string;
 }
+
+// SPIKE OLD
+
+// export interface CardAction {
+//   event: string;
+//   name: string;
+// }
+
+// export interface CardLinkAction {
+//   link: string;
+//   name: string;
+// }
+
+// export interface Card {
+//   header?: string;
+//   title?: string;
+//   textBold?: string;
+//   text?: Array<string>;
+//   img?: string;
+//   actions?: Array<CardAction | CardLinkAction>;
+//   deleteMsg?: string;
+// }
 
 @Component({
   selector: 'cx-card',

@@ -2,7 +2,7 @@ export const payment = {
   paymentForm: {
     payment: 'Payment',
     choosePaymentMethod: 'Choose a payment method',
-    expires: 'Expires:',
+    expires: 'Expires: {{month}}/{{year}}',
     defaultPaymentMethod: 'Default Payment Method',
     paymentType: 'Payment Type',
     accountHolderName: {
@@ -26,5 +26,6 @@ export const payment = {
     paymentMethods: 'Payment methods',
     newPaymentMethodsAreAddedDuringCheckout:
       'New payment methods are added during checkout.',
+    deleteConfirmation: 'Are you sure you want to delete this payment method?',
   },
 };

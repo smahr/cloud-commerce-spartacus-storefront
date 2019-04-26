@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { switchMap, filter } from 'rxjs/operators';
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { switchMap, filter, multicast, refCount } from 'rxjs/operators';
 import { Page, PageMeta } from '../model/page.model';
 import { CmsService } from './cms.service';
 import { PageMetaResolver } from '../page/page-meta.resolver';
@@ -14,20 +14,20 @@ export class PageMetaService {
     protected cms: CmsService
   ) {}
 
-  getMeta(): Observable<PageMeta> {
-    return this.cms.getCurrentPage().pipe(
-      filter(Boolean),
-      switchMap((page: Page) => {
-        const metaResolver = this.getMetaResolver(page);
-        if (metaResolver) {
-          return metaResolver.resolve();
-        } else {
-          // we do not have a page resolver
-          return of(null);
-        }
-      })
-    );
-  }
+  meta$: Observable<PageMeta> = this.cms.getCurrentPage().pipe(
+    filter(Boolean),
+    switchMap((page: Page) => {
+      const metaResolver = this.getMetaResolver(page);
+      if (metaResolver) {
+        return metaResolver.resolve();
+      } else {
+        // we do not have a page resolver
+        return of(null);
+      }
+    }),
+    multicast(() => new ReplaySubject(1)),
+    refCount()
+  );
 
   /**
    * return the title resolver with the best match

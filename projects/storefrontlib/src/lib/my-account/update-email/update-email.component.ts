@@ -5,6 +5,7 @@ import {
   GlobalMessageType,
   RoutingService,
   UserService,
+  Translation,
 } from '@spartacus/core';
 import { Observable, Subscription } from 'rxjs';
 
@@ -51,7 +52,9 @@ export class UpdateEmailComponent implements OnInit, OnDestroy {
   onSuccess(success: boolean): void {
     if (success) {
       this.globalMessageService.add({
-        text: `Success. Please sign in with ${this.newUid}`,
+        text: new Translation('login.userGreeting', { name: this.newUid }),
+        // text: new Translation({ raw: 'something' }),
+
         type: GlobalMessageType.MSG_TYPE_CONFIRMATION,
       });
       this.authService.logout();

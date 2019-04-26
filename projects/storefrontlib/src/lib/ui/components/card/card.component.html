@@ -26,7 +26,11 @@
           {{ content.textBold }}
         </div>
         <div *ngFor="let line of content.text">
-          <div class="cx-card-label">{{ line }}</div>
+          <div class="cx-card-label">
+            {{ line }}
+            <!-- {{ line | cxTranslate }} -->
+            <!-- {{ line | cxTranslateOptional }} -->
+          </div>
         </div>
       </div>
       <!-- Image -->

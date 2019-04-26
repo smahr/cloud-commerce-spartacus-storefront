@@ -19,12 +19,10 @@ export class BreadcrumbComponent {
     protected pageMetaService: PageMetaService
   ) {}
 
-  get title$(): Observable<string> {
-    return this.pageMetaService.getMeta().pipe(
-      filter(Boolean),
-      map((meta: PageMeta) => meta.heading || meta.title)
-    );
-  }
+  title$ = this.pageMetaService.meta$.pipe(
+    filter(Boolean),
+    map((meta: PageMeta) => meta.heading || meta.title)
+  );
 
   get crumbs$(): Observable<any[]> {
     // initial version for the breadcrumb

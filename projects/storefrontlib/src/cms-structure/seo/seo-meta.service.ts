@@ -14,8 +14,7 @@ export class SeoMetaService {
   ) {}
 
   init() {
-    this.pageMetaService
-      .getMeta()
+    this.pageMetaService.meta$
       .pipe(filter(Boolean))
       .subscribe((meta: PageMeta) => (this.meta = meta));
   }

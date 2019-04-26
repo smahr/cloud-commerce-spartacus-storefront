@@ -1,3 +1,5 @@
+import { Translation } from '../../i18n/translation';
+
 export const GLOBAL_MESSAGE_FEATURE = 'global-message';
 
 export interface StateWithGlobalMessage {
@@ -5,7 +7,7 @@ export interface StateWithGlobalMessage {
 }
 
 export interface GlobalMessageEntities {
-  [messageType: string]: string[];
+  [messageType: string]: (string | Translation)[];
 }
 
 export interface GlobalMessageState {

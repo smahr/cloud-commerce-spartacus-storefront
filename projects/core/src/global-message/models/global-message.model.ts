@@ -1,3 +1,5 @@
+import { Translation } from '../../i18n';
+
 export enum GlobalMessageType {
   MSG_TYPE_CONFIRMATION = '[GlobalMessage] Confirmation',
   MSG_TYPE_ERROR = '[GlobalMessage] Error',
@@ -5,6 +7,6 @@ export enum GlobalMessageType {
 }
 
 export interface GlobalMessage {
-  text: string;
+  text: Translation | string; //spike new remove
   type: GlobalMessageType;
 }
