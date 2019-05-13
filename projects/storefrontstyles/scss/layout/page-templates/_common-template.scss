@@ -8,7 +8,7 @@
     padding-top: 25px;
   }
 
-  cx-dynamic-slot {
+  cx-page-slot {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -22,4 +22,15 @@
     background-color: var(--cx-background-color, var(--cx-g-color-dark));
     color: var(--cx-color, var(--cx-g-color-inverse));
   }
+}
+%cx-page-slot {
+  // smartedit requires every slot to be rendered in block mode
+  // most likely it cannot make an overlay without some minimal sizingn
+  display: block;
+}
+%cx-paragraph {
+  display: block;
+}
+%cx-category-navigation {
+  display: block;
 }

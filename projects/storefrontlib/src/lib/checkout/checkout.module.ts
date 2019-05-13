@@ -1,17 +1,17 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MultiStepCheckoutModule } from './components/multi-step-checkout/multi-step-checkout.module';
-import { CartComponentModule } from './../cart/cart.module';
-
-import { guards } from './guards/index';
+import { NgModule } from '@angular/core';
 import { CheckoutModule } from '@spartacus/core';
+import { CartComponentModule } from '../../cms-components/checkout/cart/cart.module';
+import { MultiStepCheckoutModule } from './components/multi-step-checkout/multi-step-checkout.module';
+import { guards } from './guards/index';
+
 @NgModule({
   imports: [
     CommonModule,
     MultiStepCheckoutModule,
     CartComponentModule,
-    CheckoutModule
+    CheckoutModule,
   ],
-  providers: [...guards]
+  providers: [...guards],
 })
 export class CheckoutComponentModule {}

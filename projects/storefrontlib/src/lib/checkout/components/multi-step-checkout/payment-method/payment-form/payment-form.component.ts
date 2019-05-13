@@ -1,32 +1,30 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
   OnInit,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  OnDestroy
 } from '@angular/core';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-
-import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import {
-  CheckoutService,
-  CardType,
   Address,
+  AddressValidation,
+  CardType,
+  CheckoutService,
   Country,
-  UserService,
   GlobalMessageService,
   GlobalMessageType,
-  AddressValidation
+  UserService,
 } from '@spartacus/core';
 
-import { Observable, Subscription, combineLatest } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
-
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { Card } from '../../../../../../shared/components/card/card.component'; // tslint:disable-line
 import { SuggestedAddressDialogComponent } from '../../shipping-address/address-form/suggested-addresses-dialog/suggested-addresses-dialog.component'; // tslint:disable-line
-import { infoIconImgSrc } from '../../../../../ui/images/info-icon';
-import { Card } from '../../../../../ui/components/card/card.component'; // tslint:disable-line
+import { ICON_TYPES } from '../../../../../../cms-components/misc/icon/index';
 
 type monthType = { id: number; name: string };
 type yearType = { id: number; name: number };
@@ -34,10 +32,11 @@ type yearType = { id: number; name: number };
 @Component({
   selector: 'cx-payment-form',
   templateUrl: './payment-form.component.html',
-  styleUrls: ['./payment-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentFormComponent implements OnInit, OnDestroy {
+  iconTypes = ICON_TYPES;
+
   private checkboxSub: Subscription;
   private addressVerifySub: Subscription;
   suggestedAddressModalRef: NgbModalRef;
@@ -49,8 +48,15 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
   countries$: Observable<Country[]>;
   sameAsShippingAddress = true;
 
+  @Input()
+  paymentMethodsCount: number;
+
   @Output()
-  backToPayment = new EventEmitter<any>();
+  goBack = new EventEmitter<any>();
+
+  @Output()
+  closeForm = new EventEmitter<any>();
+
   @Output()
   addPaymentInfo = new EventEmitter<any>();
 
@@ -59,11 +65,11 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     accountHolderName: ['', Validators.required],
     cardNumber: ['', Validators.required],
     cardType: this.fb.group({
-      code: ['', Validators.required]
+      code: ['', Validators.required],
     }),
     expiryMonth: ['', Validators.required],
     expiryYear: ['', Validators.required],
-    cvn: ['', Validators.required]
+    cvn: ['', Validators.required],
   });
 
   billingAddress: FormGroup = this.fb.group({
@@ -73,12 +79,10 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     line2: [''],
     town: ['', Validators.required],
     country: this.fb.group({
-      isocode: ['', Validators.required]
+      isocode: ['', Validators.required],
     }),
-    postalCode: ['', Validators.required]
+    postalCode: ['', Validators.required],
   });
-
-  infoIconImgSrc = infoIconImgSrc;
 
   constructor(
     protected checkoutService: CheckoutService,
@@ -90,7 +94,6 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.expMonthAndYear();
-
     this.countries$ = this.userService.getAllBillingCountries().pipe(
       tap(countries => {
         // If the store is empty fetch countries. This is also used when changing language.
@@ -126,10 +129,10 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
         } else if (results.decision === 'ACCEPT') {
           this.next();
         } else if (results.decision === 'REJECT') {
-          this.globalMessageService.add({
-            type: GlobalMessageType.MSG_TYPE_ERROR,
-            text: 'Invalid Address'
-          });
+          this.globalMessageService.add(
+            { key: 'addressForm.invalidAddress' },
+            GlobalMessageType.MSG_TYPE_ERROR
+          );
           this.checkoutService.clearAddressVerificationResults();
         } else if (results.decision === 'REVIEW') {
           this.openSuggestedAddress(results);
@@ -155,8 +158,7 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     this.payment.value.defaultPayment = !this.payment.value.defaultPayment;
   }
 
-  // TODO:#530
-  paymentSelected(card): void {
+  paymentSelected(card: CardType): void {
     this.payment['controls'].cardType['controls'].code.setValue(card.code);
   }
 
@@ -208,8 +210,8 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
         address.line2,
         address.town + ', ' + region + address.country.isocode,
         address.postalCode,
-        address.phone
-      ]
+        address.phone,
+      ],
     };
   }
 
@@ -235,8 +237,12 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  close(): void {
+    this.closeForm.emit();
+  }
+
   back(): void {
-    this.backToPayment.emit();
+    this.goBack.emit();
   }
 
   verifyAddress(): void {
@@ -252,7 +258,7 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
       paymentDetails: this.payment.value,
       billingAddress: this.sameAsShippingAddress
         ? null
-        : this.billingAddress.value
+        : this.billingAddress.value,
     });
   }
 

@@ -7,19 +7,15 @@ import { filter } from 'rxjs/operators';
 
 import * as fromCheckoutStore from '../store/index';
 import { CartDataService, ANONYMOUS_USERID } from '../../cart/index';
-import {
-  PaymentDetails,
-  CardType,
-  Order,
-  DeliveryMode,
-  AddressValidation,
-  Address
-} from '../../occ/occ-models/index';
+import * as fromSelector from '../../checkout/store/selectors/index';
+import { DeliveryMode, Order } from '../../model/order.model';
+import { CardType, PaymentDetails } from '../../model/cart.model';
+import { Address, AddressValidation } from '../../model/address.model';
 
 @Injectable()
 export class CheckoutService {
   constructor(
-    private checkoutStore: Store<fromCheckoutStore.CheckoutState>,
+    private checkoutStore: Store<fromCheckoutStore.StateWithCheckout>,
     private cartData: CartDataService
   ) {}
 
@@ -100,7 +96,7 @@ export class CheckoutService {
         new fromCheckoutStore.AddDeliveryAddress({
           userId: this.cartData.userId,
           cartId: this.cartData.cartId,
-          address: address
+          address: address,
         })
       );
     }
@@ -114,7 +110,7 @@ export class CheckoutService {
       this.checkoutStore.dispatch(
         new fromCheckoutStore.LoadSupportedDeliveryModes({
           userId: this.cartData.userId,
-          cartId: this.cartData.cartId
+          cartId: this.cartData.cartId,
         })
       );
     }
@@ -130,7 +126,7 @@ export class CheckoutService {
         new fromCheckoutStore.SetDeliveryMode({
           userId: this.cartData.userId,
           cartId: this.cartData.cartId,
-          selectedModeId: mode
+          selectedModeId: mode,
         })
       );
     }
@@ -153,7 +149,7 @@ export class CheckoutService {
         new fromCheckoutStore.CreatePaymentDetails({
           userId: this.cartData.userId,
           cartId: this.cartData.cartId,
-          paymentDetails
+          paymentDetails,
         })
       );
     }
@@ -167,7 +163,7 @@ export class CheckoutService {
       this.checkoutStore.dispatch(
         new fromCheckoutStore.PlaceOrder({
           userId: this.cartData.userId,
-          cartId: this.cartData.cartId
+          cartId: this.cartData.cartId,
         })
       );
     }
@@ -182,7 +178,7 @@ export class CheckoutService {
       this.checkoutStore.dispatch(
         new fromCheckoutStore.VerifyAddress({
           userId: this.cartData.userId,
-          address
+          address,
         })
       );
     }
@@ -198,7 +194,7 @@ export class CheckoutService {
         new fromCheckoutStore.SetDeliveryAddress({
           userId: this.cartData.userId,
           cartId: this.cartData.cart.code,
-          address: address
+          address: address,
         })
       );
     }
@@ -214,7 +210,7 @@ export class CheckoutService {
         new fromCheckoutStore.SetPaymentDetails({
           userId: this.cartData.userId,
           cartId: this.cartData.cart.code,
-          paymentDetails: paymentDetails
+          paymentDetails: paymentDetails,
         })
       );
     }
@@ -243,6 +239,18 @@ export class CheckoutService {
   clearCheckoutStep(stepNumber: number): void {
     this.checkoutStore.dispatch(
       new fromCheckoutStore.ClearCheckoutStep(stepNumber)
+    );
+  }
+
+  loadCheckoutDetails(userId: string, cartId: string) {
+    this.checkoutStore.dispatch(
+      new fromCheckoutStore.LoadCheckoutDetails({ userId, cartId })
+    );
+  }
+
+  getCheckoutDetailsLoaded(): Observable<boolean> {
+    return this.checkoutStore.pipe(
+      select(fromSelector.getCheckoutDetailsLoaded)
     );
   }
 

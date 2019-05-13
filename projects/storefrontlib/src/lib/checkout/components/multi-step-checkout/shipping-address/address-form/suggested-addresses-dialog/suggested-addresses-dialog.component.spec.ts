@@ -1,8 +1,18 @@
+import { Component, Input } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { SuggestedAddressDialogComponent } from './suggested-addresses-dialog.component';
+import { I18nTestingModule } from '@spartacus/core';
+
+@Component({
+  selector: 'cx-icon',
+  template: '',
+})
+export class MockCxIconComponent {
+  @Input() type;
+}
 
 describe('SuggestedAddressDialogComponent', () => {
   let component: SuggestedAddressDialogComponent;
@@ -10,9 +20,9 @@ describe('SuggestedAddressDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [SuggestedAddressDialogComponent],
-      providers: [NgbActiveModal]
+      imports: [FormsModule, I18nTestingModule],
+      declarations: [SuggestedAddressDialogComponent, MockCxIconComponent],
+      providers: [NgbActiveModal],
     }).compileComponents();
   }));
 

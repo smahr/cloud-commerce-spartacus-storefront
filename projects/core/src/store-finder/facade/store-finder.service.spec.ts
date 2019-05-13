@@ -14,14 +14,13 @@ describe('StoreFinderService', () => {
   let winRef: WindowRef;
 
   const queryText = 'test';
-  const countryIsoCode = 'CA';
-  const regionIsoCode = 'CA-QC';
+
   const storeId = 'shop_los_angeles_1';
   const geolocationWatchId = 1;
 
   const longitudeLatitude: LongitudeLatitude = {
     longitude: 10.1,
-    latitude: 20.2
+    latitude: 20.2,
   };
 
   const MockWindowRef = {
@@ -32,23 +31,23 @@ describe('StoreFinderService', () => {
             callback({ coords: longitudeLatitude });
             return geolocationWatchId;
           },
-          clearWatch: () => {}
-        }
-      }
-    }
+          clearWatch: () => {},
+        },
+      },
+    },
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         StoreModule.forRoot({
-          store: combineReducers(fromStore.getReducers)
-        })
+          store: combineReducers(fromStore.getReducers),
+        }),
       ],
       providers: [
         StoreFinderService,
-        { provide: WindowRef, useValue: MockWindowRef }
-      ]
+        { provide: WindowRef, useValue: MockWindowRef },
+      ],
     });
 
     service = TestBed.get(StoreFinderService);
@@ -91,7 +90,7 @@ describe('StoreFinderService', () => {
       expect(store.dispatch).toHaveBeenCalledWith(
         new fromStore.FindStores({
           queryText,
-          longitudeLatitude
+          longitudeLatitude,
         })
       );
       expect(
@@ -129,26 +128,6 @@ describe('StoreFinderService', () => {
 
       expect(store.dispatch).toHaveBeenCalledWith(
         new fromStore.ViewAllStores()
-      );
-    });
-  });
-
-  describe('View All Stores for Country', () => {
-    it('should dispatch a new action', () => {
-      service.viewAllStoresForCountry(countryIsoCode);
-
-      expect(store.dispatch).toHaveBeenCalledWith(
-        new fromStore.FindAllStoresByCountry({ countryIsoCode })
-      );
-    });
-  });
-
-  describe('View All Stores for Region', () => {
-    it('should dispatch a new action', () => {
-      service.viewAllStoresForRegion('CA', 'CA-QC');
-
-      expect(store.dispatch).toHaveBeenCalledWith(
-        new fromStore.FindAllStoresByRegion({ countryIsoCode, regionIsoCode })
       );
     });
   });

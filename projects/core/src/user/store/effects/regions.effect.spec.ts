@@ -1,30 +1,34 @@
 import { TestBed } from '@angular/core/testing';
+
 import { provideMockActions } from '@ngrx/effects/testing';
-import { hot, cold } from 'jasmine-marbles';
+
 import { Observable, of } from 'rxjs';
+
+import { hot, cold } from 'jasmine-marbles';
 
 import * as fromActions from './../actions';
 import { OccMiscsService } from '../../../occ/miscs/miscs.service';
+
 import { RegionsEffects } from './regions.effect';
-import { RegionList } from '../../../occ/occ-models';
+import { Occ } from '../../../occ/occ-models/occ.models';
 
 class MockMiscsService {
-  loadRegions(_countryIsoCode: string): Observable<RegionList> {
+  loadRegions(_countryIsoCode: string): Observable<Occ.RegionList> {
     return of();
   }
 }
 
-const mockRegionsList: RegionList = {
+const mockRegionsList: Occ.RegionList = {
   regions: [
     {
       isocode: 'CA-ON',
-      name: 'Ontarion'
+      name: 'Ontarion',
     },
     {
       isocode: 'CA-QC',
-      name: 'Quebec'
-    }
-  ]
+      name: 'Quebec',
+    },
+  ],
 };
 
 describe('', () => {
@@ -37,8 +41,8 @@ describe('', () => {
       providers: [
         RegionsEffects,
         { provide: OccMiscsService, useClass: MockMiscsService },
-        provideMockActions(() => actions$)
-      ]
+        provideMockActions(() => actions$),
+      ],
     });
 
     effect = TestBed.get(RegionsEffects);

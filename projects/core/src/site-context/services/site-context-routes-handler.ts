@@ -1,13 +1,20 @@
 import { Injectable, Injector, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
-import { NavigationStart, Router } from '@angular/router';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterEvent,
+} from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { SiteContextParamsService } from '../facade/site-context-params.service';
 import { Subscription } from 'rxjs';
 import { SiteContextUrlSerializer } from './site-context-url-serializer';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SiteContextRoutesHandler implements OnDestroy {
   constructor(
@@ -24,6 +31,7 @@ export class SiteContextRoutesHandler implements OnDestroy {
 
   private router: Router;
   private location: Location;
+  private isNavigating = false;
 
   init() {
     this.router = this.injector.get<Router>(Router);
@@ -32,6 +40,7 @@ export class SiteContextRoutesHandler implements OnDestroy {
     const routingParams = this.siteContextParams.getContextParameters('route');
 
     if (routingParams.length) {
+      this.setContextParamsFromRoute(this.router.url);
       this.subscribeChanges(routingParams);
       this.subscribeRouting();
     }
@@ -39,12 +48,12 @@ export class SiteContextRoutesHandler implements OnDestroy {
 
   private subscribeChanges(params: string[]) {
     params.forEach(param => {
-      this.subscription.add(
-        this.siteContextParams
-          .getSiteContextService(param)
-          .getActive()
-          .subscribe(value => {
+      const service = this.siteContextParams.getSiteContextService(param);
+      if (service) {
+        this.subscription.add(
+          service.getActive().subscribe(value => {
             if (
+              !this.isNavigating &&
               this.contextValues[param] &&
               this.contextValues[param] !== value
             ) {
@@ -54,17 +63,29 @@ export class SiteContextRoutesHandler implements OnDestroy {
             }
             this.contextValues[param] = value;
           })
-      );
+        );
+      }
     });
   }
 
   private subscribeRouting() {
     this.subscription.add(
       this.router.events
-        .pipe(filter(event => event instanceof NavigationStart))
-        .subscribe((event: NavigationStart) =>
-          this.setContextParamsFromRoute(event.url)
+        .pipe(
+          filter(
+            event =>
+              event instanceof NavigationStart ||
+              event instanceof NavigationEnd ||
+              event instanceof NavigationError ||
+              event instanceof NavigationCancel
+          )
         )
+        .subscribe((event: RouterEvent) => {
+          this.isNavigating = event instanceof NavigationStart;
+          if (this.isNavigating) {
+            this.setContextParamsFromRoute(event.url);
+          }
+        })
     );
   }
 

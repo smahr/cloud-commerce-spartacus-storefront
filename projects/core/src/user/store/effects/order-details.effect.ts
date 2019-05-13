@@ -2,22 +2,18 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { OccOrderService } from '../../occ/index';
-
 import * as fromOrderDetailsAction from '../actions/order-details.action';
-import { ProductImageConverterService } from '../../../product/store/converters/index';
-import { Order } from '../../../occ/occ-models/index';
+import { OccOrderService } from '../../occ/index';
+import { ConverterService } from '../../../util/converter.service';
+import { PRODUCT_NORMALIZER } from '../../../product/connectors/product/converters';
+import { Order } from '../../../model/order.model';
 
 @Injectable()
 export class OrderDetailsEffect {
-  constructor(
-    private actions$: Actions,
-    private occOrderService: OccOrderService,
-    private productImageConverter: ProductImageConverterService
-  ) {}
-
   @Effect()
-  loadOrderDetails$: Observable<any> = this.actions$.pipe(
+  loadOrderDetails$: Observable<
+    fromOrderDetailsAction.OrderDetailsAction
+  > = this.actions$.pipe(
     ofType(fromOrderDetailsAction.LOAD_ORDER_DETAILS),
     map((action: fromOrderDetailsAction.LoadOrderDetails) => action.payload),
     switchMap(payload => {
@@ -28,15 +24,19 @@ export class OrderDetailsEffect {
             if (order.consignments) {
               order.consignments.forEach(element => {
                 element.entries.forEach(entry => {
-                  this.productImageConverter.convertProduct(
-                    entry.orderEntry.product
-                  );
+                  entry.orderEntry.product = this.converter.convert(
+                    entry.orderEntry.product,
+                    PRODUCT_NORMALIZER
+                  ) as any;
                 });
               });
             }
             if (order.unconsignedEntries) {
               order.unconsignedEntries.forEach(entry => {
-                this.productImageConverter.convertProduct(entry.product);
+                entry.product = this.converter.convert(
+                  entry.product,
+                  PRODUCT_NORMALIZER
+                ) as any;
               });
             }
             return new fromOrderDetailsAction.LoadOrderDetailsSuccess(order);
@@ -47,4 +47,10 @@ export class OrderDetailsEffect {
         );
     })
   );
+
+  constructor(
+    private actions$: Actions,
+    private occOrderService: OccOrderService,
+    private converter: ConverterService
+  ) {}
 }

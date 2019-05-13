@@ -20,7 +20,7 @@ describe('Find Stores Reducer', () => {
       const { initialState } = fromReducers;
       const loadAction = new fromActions.FindStores({
         queryText: 'test',
-        searchConfig
+        searchConfig,
       });
 
       const loadingState = fromReducers.reducer(initialState, loadAction);
@@ -39,43 +39,6 @@ describe('Find Stores Reducer', () => {
 
       const loadingState = fromReducers.reducer(initialState, loadAction);
       const resultAction = new fromActions.FindStoreByIdSuccess(results);
-      const state = fromReducers.reducer(loadingState, resultAction);
-
-      expect(state.findStoresEntities).toEqual(results);
-    });
-  });
-
-  describe('FIND_ALL_STORES_BY_COUNTRY_SUCCESS action', () => {
-    it('should populate results after loading', () => {
-      const results = { pointOfServices: [{ name: 'test' }] };
-      const { initialState } = fromReducers;
-      const loadAction = new fromActions.FindAllStoresByCountry({
-        countryIsoCode: 'CA'
-      });
-
-      const loadingState = fromReducers.reducer(initialState, loadAction);
-      const resultAction = new fromActions.FindAllStoresByCountrySuccess(
-        results
-      );
-      const state = fromReducers.reducer(loadingState, resultAction);
-
-      expect(state.findStoresEntities).toEqual(results);
-    });
-  });
-
-  describe('FIND_ALL_STORES_BY_REGION_SUCCESS action', () => {
-    it('should populate results after loading', () => {
-      const results = { pointOfServices: [{ name: 'test' }] };
-      const { initialState } = fromReducers;
-      const loadAction = new fromActions.FindAllStoresByRegion({
-        countryIsoCode: 'CA',
-        regionIsoCode: 'CA-QC'
-      });
-
-      const loadingState = fromReducers.reducer(initialState, loadAction);
-      const resultAction = new fromActions.FindAllStoresByRegionSuccess(
-        results
-      );
       const state = fromReducers.reducer(loadingState, resultAction);
 
       expect(state.findStoresEntities).toEqual(results);

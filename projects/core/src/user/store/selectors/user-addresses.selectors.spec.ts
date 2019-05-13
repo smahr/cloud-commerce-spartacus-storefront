@@ -1,13 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-
 import { Store, StoreModule, select } from '@ngrx/store';
 
 import { StateWithUser, USER_FEATURE } from '../user-state';
 import * as fromActions from '../actions/index';
 import * as fromReducers from '../reducers/index';
 import * as fromSelectors from '../selectors/index';
-import { Address } from '../../../occ/occ-models/index';
 import { LoaderState } from '../../../state/utils/loader/loader-state';
+import { Address } from '../../../model/address.model';
 
 const mockUserAddresses: Address[] = [{ id: 'address1' }, { id: 'address2' }];
 
@@ -18,8 +17,8 @@ describe('User Addresses Selectors', () => {
     TestBed.configureTestingModule({
       imports: [
         StoreModule.forRoot({}),
-        StoreModule.forFeature(USER_FEATURE, fromReducers.getReducers())
-      ]
+        StoreModule.forFeature(USER_FEATURE, fromReducers.getReducers()),
+      ],
     });
 
     store = TestBed.get(Store);
@@ -38,7 +37,7 @@ describe('User Addresses Selectors', () => {
         loading: false,
         error: false,
         success: false,
-        value: []
+        value: [],
       });
     });
   });
@@ -60,8 +59,8 @@ describe('User Addresses Selectors', () => {
     });
   });
 
-  describe('getAddressLoading', () => {
-    it('should return isLoading flag', () => {
+  describe('getAddressesLoading', () => {
+    it('should return loading flag', () => {
       let result: boolean;
       store
         .pipe(select(fromSelectors.getAddressesLoading))
@@ -70,21 +69,6 @@ describe('User Addresses Selectors', () => {
       expect(result).toEqual(false);
 
       store.dispatch(new fromActions.LoadUserAddresses('userId'));
-
-      expect(result).toEqual(true);
-    });
-  });
-
-  describe('getAddressProcessingStatus', () => {
-    it('should return isActionProcessing flag', () => {
-      let result: boolean;
-      store
-        .pipe(select(fromSelectors.getAddressesLoading))
-        .subscribe(value => (result = value));
-
-      expect(result).toEqual(false);
-
-      store.dispatch(new fromActions.DeleteUserAddress('addressId'));
 
       expect(result).toEqual(true);
     });

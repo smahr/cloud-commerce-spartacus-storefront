@@ -1,14 +1,9 @@
-import { throwError, Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { OccConfig } from '../config/occ-config';
-import {
-  CountryList,
-  TitleList,
-  CardTypeList,
-  RegionList
-} from '../../occ/occ-models/index';
+import { Occ } from '../../occ/occ-models/occ.models';
+import { OccEndpointsService } from '../services/occ-endpoints.service';
 
 const ENDPOINT_COUNTRIES = 'countries';
 const ENDPOINT_TITLES = 'titles';
@@ -17,51 +12,48 @@ const ENDPOINT_REGIONS = 'regions';
 const COUNTRIES_TYPE_SHIPPING = 'SHIPPING';
 const COUNTRIES_TYPE_BILLING = 'BILLING';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class OccMiscsService {
-  constructor(private http: HttpClient, private config: OccConfig) {}
+  constructor(
+    private http: HttpClient,
+    private occEndpoints: OccEndpointsService
+  ) {}
 
-  protected getEndpoint(endpoint: string) {
-    return (
-      (this.config.server.baseUrl || '') +
-      this.config.server.occPrefix +
-      this.config.site.baseSite +
-      '/' +
-      endpoint
-    );
-  }
-
-  loadDeliveryCountries(): Observable<CountryList> {
+  loadDeliveryCountries(): Observable<Occ.CountryList> {
     return this.http
-      .get<CountryList>(this.getEndpoint(ENDPOINT_COUNTRIES), {
-        params: new HttpParams().set('type', COUNTRIES_TYPE_SHIPPING)
+      .get<Occ.CountryList>(this.occEndpoints.getEndpoint(ENDPOINT_COUNTRIES), {
+        params: new HttpParams().set('type', COUNTRIES_TYPE_SHIPPING),
       })
       .pipe(catchError((error: any) => throwError(error.json())));
   }
 
-  loadBillingCountries(): Observable<CountryList> {
+  loadBillingCountries(): Observable<Occ.CountryList> {
     return this.http
-      .get<CountryList>(this.getEndpoint(ENDPOINT_COUNTRIES), {
-        params: new HttpParams().set('type', COUNTRIES_TYPE_BILLING)
+      .get<Occ.CountryList>(this.occEndpoints.getEndpoint(ENDPOINT_COUNTRIES), {
+        params: new HttpParams().set('type', COUNTRIES_TYPE_BILLING),
       })
       .pipe(catchError((error: any) => throwError(error.json())));
   }
 
-  loadTitles(): Observable<TitleList> {
+  loadTitles(): Observable<Occ.TitleList> {
     return this.http
-      .get<TitleList>(this.getEndpoint(ENDPOINT_TITLES))
+      .get<Occ.TitleList>(this.occEndpoints.getEndpoint(ENDPOINT_TITLES))
       .pipe(catchError((error: any) => throwError(error.json())));
   }
 
-  loadCardTypes(): Observable<CardTypeList> {
+  loadCardTypes(): Observable<Occ.CardTypeList> {
     return this.http
-      .get<CardTypeList>(this.getEndpoint(ENDPOINT_CARD_TYPES))
+      .get<Occ.CardTypeList>(this.occEndpoints.getEndpoint(ENDPOINT_CARD_TYPES))
       .pipe(catchError((error: any) => throwError(error.json())));
   }
 
-  loadRegions(countryIsoCode: string): Observable<RegionList> {
+  loadRegions(countryIsoCode: string): Observable<Occ.RegionList> {
     return this.http
-      .get<RegionList>(this.getEndpoint(this.buildRegionsUrl(countryIsoCode)))
+      .get<Occ.RegionList>(
+        this.occEndpoints.getEndpoint(this.buildRegionsUrl(countryIsoCode))
+      )
       .pipe(catchError((error: any) => throwError(error.json())));
   }
 

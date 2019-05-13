@@ -1,12 +1,13 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { I18nModule } from '@spartacus/core';
+import { CardModule } from '../../../../../../shared/components/card/card.module';
 import { BootstrapModule } from '../../../../../bootstrap.module';
-import { CardModule } from '../../../../../ui/components/card/card.module';
-
-import { PaymentFormComponent } from './payment-form.component';
 import { BillingAddressFormModule } from '../billing-address-form/billing-address-form.module';
+import { IconModule } from '../../../../../../cms-components/misc/icon/index';
+import { PaymentFormComponent } from './payment-form.component';
 
 @NgModule({
   imports: [
@@ -15,10 +16,12 @@ import { BillingAddressFormModule } from '../billing-address-form/billing-addres
     NgSelectModule,
     BootstrapModule,
     CardModule,
-    BillingAddressFormModule
+    BillingAddressFormModule,
+    I18nModule,
+    IconModule,
   ],
   declarations: [PaymentFormComponent],
   entryComponents: [PaymentFormComponent],
-  exports: [PaymentFormComponent]
+  exports: [PaymentFormComponent],
 })
 export class PaymentFormModule {}

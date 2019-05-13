@@ -1,14 +1,13 @@
-import * as fromReducer from './regions.reducer';
 import * as fromActions from '../actions/index';
-import { Region } from '../../../occ/occ-models/index';
+
+import * as fromReducer from './regions.reducer';
+import { Region } from '../../../model/address.model';
 
 describe('Regions Reducer', () => {
   describe('undefined action', () => {
     it('should return the default state', () => {
       const { initialState } = fromReducer;
-      const action = {} as
-        | fromActions.RegionsAction
-        | fromActions.ClearMiscsData;
+      const action = {} as fromActions.RegionsAction;
       const state = fromReducer.reducer(undefined, action);
 
       expect(state).toBe(initialState);
@@ -20,12 +19,12 @@ describe('Regions Reducer', () => {
       const mockRegions: Region[] = [
         {
           isocode: 'CA-ON',
-          name: 'Ontario'
+          name: 'Ontario',
         },
         {
           isocode: 'CA-QC',
-          name: 'Quebec'
-        }
+          name: 'Quebec',
+        },
       ];
 
       const { initialState } = fromReducer;

@@ -4,3 +4,6 @@ export * from './store/selectors/index';
 
 export * from './facade/index';
 export * from './checkout.module';
+
+export * from './services/index';
+export * from './models/checkout.model';

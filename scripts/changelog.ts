@@ -30,6 +30,7 @@ export interface ChangelogOptions {
 export default function run(args: ChangelogOptions, logger: logging.Logger) {
   const commits: JsonObject[] = [];
   let toSha: string | null = null;
+  const breakingChanges: JsonObject[] = [];
 
   const githubToken = (
     args.githubToken ||
@@ -37,10 +38,17 @@ export default function run(args: ChangelogOptions, logger: logging.Logger) {
     ''
   ).trim();
 
+  const libraryPaths = {
+    '@spartacus/storefront': './projects/storefrontlib',
+    '@spartacus/core': './projects/core',
+    '@spartacus/styles': './projects/storefrontstyles'
+  };
+
   return new Promise(resolve => {
     (gitRawCommits({
       from: args.from,
       to: args.to || 'HEAD',
+      path: args.library ? libraryPaths[args.library] : '.',
       format:
         '%B%n-hash-%n%H%n-gitTags-%n%D%n-committerDate-%n%ci%n-authorName-%n%aN%n'
     }) as NodeJS.ReadStream)
@@ -78,7 +86,17 @@ export default function run(args: ChangelogOptions, logger: logging.Logger) {
             if (tags && tags.find(x => x == args.to)) {
               toSha = chunk.hash as string;
             }
-
+            const notes: any = chunk.notes;
+            if (Array.isArray(notes)) {
+              notes
+                .filter(note => note.title === 'BREAKING CHANGE')
+                .forEach(note => {
+                  breakingChanges.push({
+                    content: note.text,
+                    commit: chunk
+                  });
+                });
+            }
             commits.push(chunk);
             cb();
           } catch (err) {
@@ -100,7 +118,8 @@ export default function run(args: ChangelogOptions, logger: logging.Logger) {
             v
           ),
         commits,
-        packages
+        packages,
+        breakingChanges
       });
 
       if (args.stdout || !githubToken) {
@@ -182,8 +201,10 @@ if (typeof config.from === 'undefined') {
       config.library = '@spartacus/core';
       break;
     case 'storefrontlib':
+    case 'storefront':
+    case '@spartacus/storefront':
     case '@spartacus/storefrontlib':
-      config.library = '@spartacus/storefrontlib';
+      config.library = '@spartacus/storefront';
       break;
     case 'styles':
     case '@spartacus/styles':

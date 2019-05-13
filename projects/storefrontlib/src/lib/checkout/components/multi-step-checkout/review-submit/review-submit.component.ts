@@ -1,120 +1,128 @@
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Observable, combineLatest } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import {
-  Component,
-  ChangeDetectionStrategy,
-  Input,
-  OnInit
-} from '@angular/core';
-
-import {
-  CheckoutService,
   Address,
   CartService,
-  UserService,
-  OrderEntry,
-  Cart,
-  DeliveryMode,
+  CheckoutService,
   Country,
-  PaymentDetails
+  DeliveryMode,
+  PaymentDetails,
+  Cart,
+  OrderEntry,
+  UserService,
+  TranslationService,
 } from '@spartacus/core';
-
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-
-import { Card } from '../../../../ui/components/card/card.component';
+import { Card } from '../../../../../shared/components/card/card.component';
 
 @Component({
   selector: 'cx-review-submit',
   templateUrl: './review-submit.component.html',
-  styleUrls: ['./review-submit.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewSubmitComponent implements OnInit {
-  @Input()
-  deliveryAddress: Address;
-  @Input()
-  shippingMethod: string;
-  @Input()
-  paymentDetails: PaymentDetails;
-
   entries$: Observable<OrderEntry[]>;
   cart$: Observable<Cart>;
   deliveryMode$: Observable<DeliveryMode>;
-  countryName$: Observable<Country>;
+  countryName$: Observable<string>;
+  deliveryAddress$: Observable<Address>;
+  paymentDetails$: Observable<PaymentDetails>;
 
   constructor(
     protected checkoutService: CheckoutService,
     protected userService: UserService,
-    protected cartService: CartService
+    protected cartService: CartService,
+    private translation: TranslationService
   ) {}
 
   ngOnInit() {
     this.cart$ = this.cartService.getActive();
     this.entries$ = this.cartService.getEntries();
+    this.deliveryAddress$ = this.checkoutService.getDeliveryAddress();
+    this.paymentDetails$ = this.checkoutService.getPaymentDetails();
 
     this.deliveryMode$ = this.checkoutService.getSelectedDeliveryMode().pipe(
-      tap(selected => {
+      tap((selected: DeliveryMode) => {
         if (selected === null) {
           this.checkoutService.loadSupportedDeliveryModes();
         }
       })
     );
 
-    this.countryName$ = this.userService
-      .getCountry(this.deliveryAddress.country.isocode)
-      .pipe(
-        tap(country => {
-          if (country === null) {
-            this.userService.loadDeliveryCountries();
-          }
-        })
-      );
+    this.countryName$ = this.deliveryAddress$.pipe(
+      switchMap((address: Address) =>
+        this.userService.getCountry(address.country.isocode)
+      ),
+      tap((country: Country) => {
+        if (country === null) {
+          this.userService.loadDeliveryCountries();
+        }
+      }),
+      map((country: Country) => country && country.name)
+    );
   }
 
-  getShippingAddressCard(countryName: string): Card {
-    if (!countryName) {
-      countryName = this.deliveryAddress.country.isocode;
-    }
+  getShippingAddressCard(
+    deliveryAddress: Address,
+    countryName: string
+  ): Observable<Card> {
+    return combineLatest([
+      this.translation.translate('addressCard.shipTo'),
+    ]).pipe(
+      map(([textTitle]) => {
+        if (!countryName) {
+          countryName = deliveryAddress.country.isocode;
+        }
 
-    let region = '';
-    if (this.deliveryAddress.region && this.deliveryAddress.region.isocode) {
-      region = this.deliveryAddress.region.isocode + ', ';
-    }
+        let region = '';
+        if (deliveryAddress.region && deliveryAddress.region.isocode) {
+          region = deliveryAddress.region.isocode + ', ';
+        }
 
-    return {
-      title: 'Ship To',
-      textBold:
-        this.deliveryAddress.firstName + ' ' + this.deliveryAddress.lastName,
-      text: [
-        this.deliveryAddress.line1,
-        this.deliveryAddress.line2,
-        this.deliveryAddress.town + ', ' + region + countryName,
-        this.deliveryAddress.postalCode,
-        this.deliveryAddress.phone
-      ]
-    };
+        return {
+          title: textTitle,
+          textBold: deliveryAddress.firstName + ' ' + deliveryAddress.lastName,
+          text: [
+            deliveryAddress.line1,
+            deliveryAddress.line2,
+            deliveryAddress.town + ', ' + region + countryName,
+            deliveryAddress.postalCode,
+            deliveryAddress.phone,
+          ],
+        };
+      })
+    );
   }
 
-  getShippingMethodCard(deliveryMode: DeliveryMode): Card {
-    if (deliveryMode) {
-      return {
-        title: 'Shipping Method',
-        textBold: this.shippingMethod,
-        text: [deliveryMode.description]
-      };
-    }
+  getDeliveryModeCard(deliveryMode: DeliveryMode): Observable<Card> {
+    return combineLatest([
+      this.translation.translate('checkoutShipping.shippingMethod'),
+    ]).pipe(
+      map(([textTitle]) => {
+        return {
+          title: textTitle,
+          textBold: deliveryMode.name,
+          text: [deliveryMode.description],
+        };
+      })
+    );
   }
 
-  getPaymentMethodCard(): Card {
-    return {
-      title: 'Payment',
-      textBold: this.paymentDetails.accountHolderName,
-      text: [
-        this.paymentDetails.cardNumber,
-        'Expires: ' +
-          this.paymentDetails.expiryMonth +
-          '/' +
-          this.paymentDetails.expiryYear
-      ]
-    };
+  getPaymentMethodCard(paymentDetails: PaymentDetails): Observable<Card> {
+    return combineLatest([
+      this.translation.translate('paymentForm.payment'),
+      this.translation.translate('paymentCard.expires', {
+        month: paymentDetails.expiryMonth,
+        year: paymentDetails.expiryYear,
+      }),
+    ]).pipe(
+      map(([textTitle, textExpires]) => {
+        return {
+          title: textTitle,
+          textBold: paymentDetails.accountHolderName,
+          text: [paymentDetails.cardNumber, textExpires],
+        };
+      })
+    );
   }
 }

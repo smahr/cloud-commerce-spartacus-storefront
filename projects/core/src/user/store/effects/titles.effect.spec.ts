@@ -1,32 +1,43 @@
 import { TestBed } from '@angular/core/testing';
+
 import { provideMockActions } from '@ngrx/effects/testing';
-import { TitlesEffects } from '.';
 
 import { Observable, of } from 'rxjs';
 
 import { hot, cold } from 'jasmine-marbles';
 
 import * as fromActions from './../actions';
+
 import { OccMiscsService } from '../../../occ/miscs/miscs.service';
-import { TitleList } from '../../../occ/occ-models';
+
+import { TitlesEffects } from '.';
+import { Occ } from '../../../occ/occ-models/occ.models';
 
 class MockMiscsService {
-  loadTitles(): Observable<TitleList> {
+  loadTitles(): Observable<Occ.TitleList> {
     return of();
   }
 }
 
-const mockTitlesList: TitleList = {
+const mockTitlesList: Occ.TitleList = {
   titles: [
     {
       code: 'mr',
-      name: 'Mr.'
+      name: 'Mr.',
     },
     {
       code: 'mrs',
-      name: 'Mrs.'
-    }
-  ]
+      name: 'Mrs.',
+    },
+    {
+      code: 'dr',
+      name: 'Dr.',
+    },
+    {
+      code: 'rev',
+      name: 'Rev.',
+    },
+  ],
 };
 
 describe('Titles effect', () => {
@@ -39,8 +50,8 @@ describe('Titles effect', () => {
       providers: [
         TitlesEffects,
         { provide: OccMiscsService, useClass: MockMiscsService },
-        provideMockActions(() => actions$)
-      ]
+        provideMockActions(() => actions$),
+      ],
     });
 
     effect = TestBed.get(TitlesEffects);

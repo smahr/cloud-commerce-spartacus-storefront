@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-
-import { Store, select } from '@ngrx/store';
-
+import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-
+import { map, shareReplay, tap } from 'rxjs/operators';
 import * as fromStore from '../store/index';
-import { Product } from '../../occ/occ-models/occ.models';
+import { Product } from '../../model/product.model';
 
 @Injectable()
 export class ProductService {
   constructor(private store: Store<fromStore.StateWithProduct>) {}
+
+  private products: { [code: string]: Observable<Product> } = {};
 
   /**
    * Returns the product observable. The product will be loaded
@@ -19,19 +18,23 @@ export class ProductService {
    * The underlying product loader ensures that the product is
    * only loaded once, even in case of parallel observers.
    */
-  get(productCode: string, forceReload = false): Observable<Product> {
-    return this.store.pipe(
-      select(fromStore.getSelectedProductStateFactory(productCode)),
-      tap(productState => {
-        const attemptedLoad =
-          productState.loading || productState.success || productState.error;
+  get(productCode: string): Observable<Product> {
+    if (!this.products[productCode]) {
+      this.products[productCode] = this.store.pipe(
+        select(fromStore.getSelectedProductStateFactory(productCode)),
+        tap(productState => {
+          const attemptedLoad =
+            productState.loading || productState.success || productState.error;
 
-        if (!attemptedLoad || forceReload) {
-          this.store.dispatch(new fromStore.LoadProduct(productCode));
-        }
-      }),
-      map(productState => productState.value)
-    );
+          if (!attemptedLoad) {
+            this.store.dispatch(new fromStore.LoadProduct(productCode));
+          }
+        }),
+        map(productState => productState.value),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    }
+    return this.products[productCode];
   }
 
   /**
@@ -66,7 +69,7 @@ export class ProductService {
    * whenever selected by the `get`, but in some cases an
    * explicit reload might be needed.
    */
-  reload(productCode: string) {
+  reload(productCode: string): void {
     this.store.dispatch(new fromStore.LoadProduct(productCode));
   }
 }

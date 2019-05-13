@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { DeliveryCountriesEffects } from './delivery-countries.effect';
+
+import { provideMockActions } from '@ngrx/effects/testing';
 
 import { Observable, of } from 'rxjs';
 
@@ -7,11 +8,13 @@ import { hot, cold } from 'jasmine-marbles';
 
 import * as fromActions from './../actions';
 import { OccMiscsService } from '../../../occ/miscs/miscs.service';
-import { provideMockActions } from '@ngrx/effects/testing';
-import { Country, CountryList } from '../../../occ/occ-models/index';
+
+import { DeliveryCountriesEffects } from './delivery-countries.effect';
+import { Occ } from '../../../occ/occ-models/occ.models';
+import { Country } from '../../../model/address.model';
 
 class MockMiscsService {
-  loadDeliveryCountries(): Observable<CountryList> {
+  loadDeliveryCountries(): Observable<Occ.CountryList> {
     return of();
   }
 }
@@ -19,16 +22,16 @@ class MockMiscsService {
 const mockCountries: Country[] = [
   {
     isocode: 'AL',
-    name: 'Albania'
+    name: 'Albania',
   },
   {
     isocode: 'AD',
-    name: 'Andorra'
-  }
+    name: 'Andorra',
+  },
 ];
 
-const mockCountriesList: CountryList = {
-  countries: mockCountries
+const mockCountriesList: Occ.CountryList = {
+  countries: mockCountries,
 };
 
 describe('Delivery Countries effect', () => {
@@ -41,8 +44,8 @@ describe('Delivery Countries effect', () => {
       providers: [
         DeliveryCountriesEffects,
         { provide: OccMiscsService, useClass: MockMiscsService },
-        provideMockActions(() => actions$)
-      ]
+        provideMockActions(() => actions$),
+      ],
     });
 
     effect = TestBed.get(DeliveryCountriesEffects);

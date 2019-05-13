@@ -3,11 +3,27 @@
 @import './page-templates/content-page-1';
 @import './page-templates/category-page';
 @import './page-templates/product-detail';
+@import './page-templates/product-list';
+@import './page-templates/search-results-list';
 @import './page-templates/cart-page';
 @import './page-templates/login-page';
+@import './page-templates/error-page';
+@import './page-templates/order-detail-page';
 
 cx-page-layout {
   @extend %cx-page-layout !optional;
+}
+
+cx-page-slot {
+  @extend %cx-page-slot !optional;
+}
+
+cx-paragraph {
+  @extend %cx-paragraph !optional;
+}
+
+cx-category-navigation {
+  @extend %cx-category-navigation !optional;
 }
 
 .LandingPage2Template {
@@ -22,6 +38,14 @@ cx-page-layout {
   @extend %CategoryPageTemplate !optional;
 }
 
+.ProductListPageTemplate {
+  @extend %ProductListPageTemplate !optional;
+}
+
+.SearchResultsListPageTemplate {
+  @extend %SearchResultsListPageTemplate !optional;
+}
+
 .ProductDetailsPageTemplate {
   @extend %ProductDetailsPageTemplate !optional;
 }
@@ -34,6 +58,15 @@ cx-page-layout {
   @extend %LoginPageTemplate !optional;
 }
 
-.ErrorPageTemplate {
+.AccountPageTemplate {
+  --cx-max-width: 100%;
   @extend %LoginPageTemplate !optional;
+}
+
+.MultiStepCheckoutSummaryPageTemplate {
+  @extend %ContentPage1Template !optional;
+}
+
+.ErrorPageTemplate {
+  @extend %ErrorPageTemplate !optional;
 }

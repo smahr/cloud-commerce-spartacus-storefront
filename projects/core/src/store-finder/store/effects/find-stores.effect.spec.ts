@@ -16,10 +16,12 @@ import { OccStoreFinderService } from '../../occ/store-finder.service';
 import * as fromEffects from './find-stores.effect';
 
 const MockOccModuleConfig: OccConfig = {
-  server: {
-    baseUrl: '',
-    occPrefix: ''
-  }
+  backend: {
+    occ: {
+      baseUrl: '',
+      prefix: '',
+    },
+  },
 };
 
 describe('FindStores Effects', () => {
@@ -29,7 +31,7 @@ describe('FindStores Effects', () => {
   let searchConfig: StoreFinderSearchConfig;
   const longitudeLatitude: LongitudeLatitude = {
     longitude: 10.1,
-    latitude: 20.2
+    latitude: 20.2,
   };
 
   const singleStoreResult = {};
@@ -42,8 +44,8 @@ describe('FindStores Effects', () => {
         OccStoreFinderService,
         { provide: OccConfig, useValue: MockOccModuleConfig },
         fromEffects.FindStoresEffect,
-        provideMockActions(() => actions$)
-      ]
+        provideMockActions(() => actions$),
+      ],
     });
 
     service = TestBed.get(OccStoreFinderService);
@@ -52,15 +54,13 @@ describe('FindStores Effects', () => {
 
     spyOn(service, 'findStores').and.returnValue(of(searchResult));
     spyOn(service, 'findStoreById').and.returnValue(of(singleStoreResult));
-    spyOn(service, 'findStoresByCountry').and.returnValue(of(searchResult));
-    spyOn(service, 'findStoresByRegion').and.returnValue(of(searchResult));
   });
 
   describe('findStores$', () => {
     it('should return searchResult from FindStoresSuccess', () => {
       const action = new fromActions.FindStores({
         queryText: 'test',
-        searchConfig
+        searchConfig,
       });
       const completion = new fromActions.FindStoresSuccess(searchResult);
 
@@ -90,7 +90,7 @@ describe('FindStores Effects', () => {
       const action = new fromActions.FindStores({
         queryText: '',
         longitudeLatitude,
-        searchConfig
+        searchConfig,
       });
       const completion = new fromActions.FindStoresSuccess(searchResult);
 
@@ -98,39 +98,6 @@ describe('FindStores Effects', () => {
       const expected = cold('-b', { b: completion });
 
       expect(effects.findStores$).toBeObservable(expected);
-    });
-  });
-
-  describe('findAllStoresByCountry$', () => {
-    it('should return searchResult from FindAllStoresByCountrySuccess', () => {
-      const action = new fromActions.FindAllStoresByCountry({
-        countryIsoCode: 'test'
-      });
-      const completion = new fromActions.FindAllStoresByCountrySuccess(
-        searchResult
-      );
-
-      actions$ = hot('-a', { a: action });
-      const expected = cold('-b', { b: completion });
-
-      expect(effects.findAllStoresByCountry$).toBeObservable(expected);
-    });
-  });
-
-  describe('findAllStoresByRegion$', () => {
-    it('should return searchResult from FindAllStoresByRegionSuccess', () => {
-      const action = new fromActions.FindAllStoresByRegion({
-        countryIsoCode: 'test',
-        regionIsoCode: 'CA-QC'
-      });
-      const completion = new fromActions.FindAllStoresByRegionSuccess(
-        searchResult
-      );
-
-      actions$ = hot('-a', { a: action });
-      const expected = cold('-b', { b: completion });
-
-      expect(effects.findAllStoresByRegion$).toBeObservable(expected);
     });
   });
 });

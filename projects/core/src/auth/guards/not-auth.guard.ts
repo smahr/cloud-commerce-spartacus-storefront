@@ -6,7 +6,7 @@ import { RoutingService } from '../../routing/facade/routing.service';
 import { AuthService } from '../facade/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotAuthGuard implements CanActivate {
   static GUARD_NAME = 'NotAuthGuard';
@@ -20,7 +20,7 @@ export class NotAuthGuard implements CanActivate {
     return this.authService.getUserToken().pipe(
       map(token => {
         if (token.access_token) {
-          this.routingService.go({ route: ['home'] });
+          this.routingService.go({ cxRoute: 'home' });
         }
         return !token.access_token;
       })

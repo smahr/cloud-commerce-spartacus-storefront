@@ -4,6 +4,11 @@
 /dist
 /tmp
 /out-tsc
+/documentation
+
+# docs archives
+docs.tar.gz
+docs.zip
 
 # dependencies
 node_modules/
@@ -28,7 +33,6 @@ package-lock.json
 
 # Coverage reports
 **/coverage
-**/jenkins
 
 # misc
 /.sass-cache

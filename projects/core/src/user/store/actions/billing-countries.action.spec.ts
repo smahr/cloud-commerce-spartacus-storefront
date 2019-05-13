@@ -1,5 +1,5 @@
 import * as fromAction from './billing-countries.action';
-import { Country } from '../../../occ/occ-models/index';
+import { Country } from '../../../model/address.model';
 
 describe('Billing Countries Actions', () => {
   describe('LoadBillingCountries', () => {
@@ -7,7 +7,7 @@ describe('Billing Countries Actions', () => {
       const action = new fromAction.LoadBillingCountries();
 
       expect({ ...action }).toEqual({
-        type: fromAction.LOAD_BILLING_COUNTRIES
+        type: fromAction.LOAD_BILLING_COUNTRIES,
       });
     });
   });
@@ -19,7 +19,7 @@ describe('Billing Countries Actions', () => {
 
       expect({ ...action }).toEqual({
         type: fromAction.LOAD_BILLING_COUNTRIES_FAIL,
-        payload: sampleError
+        payload: sampleError,
       });
     });
   });
@@ -29,17 +29,17 @@ describe('Billing Countries Actions', () => {
       const countries: Country[] = [
         {
           isocode: 'AL',
-          name: 'Albania'
+          name: 'Albania',
         },
         {
           isocode: 'AD',
-          name: 'Andorra'
-        }
+          name: 'Andorra',
+        },
       ];
       const action = new fromAction.LoadBillingCountriesSuccess(countries);
       expect({ ...action }).toEqual({
         type: fromAction.LOAD_BILLING_COUNTRIES_SUCCESS,
-        payload: countries
+        payload: countries,
       });
     });
   });

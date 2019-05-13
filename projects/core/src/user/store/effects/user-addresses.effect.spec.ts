@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
-
 import { provideMockActions } from '@ngrx/effects/testing';
-
 import { Observable, of } from 'rxjs';
-
 import { cold, hot } from 'jasmine-marbles';
 
 import * as fromUserAddressesAction from '../actions/user-addresses.action';
-import { AddressList, Address } from '../../../occ';
-import { OccUserService } from '../../occ/index';
-
 import * as fromUserAddressesEffect from './user-addresses.effect';
+import { OccUserService } from '../../occ/index';
+import { UserService } from '../../facade/user.service';
+import { GlobalMessageService } from '../../../global-message/index';
+import { Occ } from '../../../occ/occ-models/occ.models';
+import { User } from '../../../model/misc.model';
+import { Address } from '../../../model/address.model';
 
 class MockOccUserService {
   loadUserAddresses(_userId: string): Observable<any> {
@@ -27,7 +27,21 @@ class MockOccUserService {
   }
 }
 
-const mockUserAddresses: AddressList = { addresses: [{ id: 'address123' }] };
+class MockUserService {
+  loadAddresses = jasmine.createSpy();
+
+  get(): Observable<User> {
+    return of({});
+  }
+}
+
+class MockGlobalMessageService {
+  add = jasmine.createSpy();
+}
+
+const mockUserAddresses: Occ.AddressList = {
+  addresses: [{ id: 'address123' }],
+};
 const mockUserAddress: Address = {
   firstName: 'John',
   lastName: 'Doe',
@@ -37,12 +51,12 @@ const mockUserAddress: Address = {
   town: 'town',
   region: { isocode: 'JP-27' },
   postalCode: 'zip',
-  country: { isocode: 'JP' }
+  country: { isocode: 'JP' },
 };
 
 describe('User Addresses effect', () => {
   let userAddressesEffect: fromUserAddressesEffect.UserAddressesEffects;
-  let userService: OccUserService;
+  let userOccService: OccUserService;
   let actions$: Observable<any>;
 
   beforeEach(() => {
@@ -50,16 +64,18 @@ describe('User Addresses effect', () => {
       providers: [
         fromUserAddressesEffect.UserAddressesEffects,
         { provide: OccUserService, useClass: MockOccUserService },
-        provideMockActions(() => actions$)
-      ]
+        { provide: UserService, useClass: MockUserService },
+        { provide: GlobalMessageService, useClass: MockGlobalMessageService },
+        provideMockActions(() => actions$),
+      ],
     });
 
     userAddressesEffect = TestBed.get(
       fromUserAddressesEffect.UserAddressesEffects
     );
-    userService = TestBed.get(OccUserService);
+    userOccService = TestBed.get(OccUserService);
 
-    spyOn(userService, 'loadUserAddresses').and.returnValue(
+    spyOn(userOccService, 'loadUserAddresses').and.returnValue(
       of(mockUserAddresses)
     );
   });
@@ -84,7 +100,7 @@ describe('User Addresses effect', () => {
     it('should add user address', () => {
       const action = new fromUserAddressesAction.AddUserAddress({
         userId: '123',
-        address: mockUserAddress
+        address: mockUserAddress,
       });
       const completion = new fromUserAddressesAction.AddUserAddressSuccess({});
 
@@ -100,8 +116,8 @@ describe('User Addresses effect', () => {
         userId: '123',
         addressId: '123',
         address: {
-          firstName: 'test'
-        }
+          firstName: 'test',
+        },
       });
       const completion = new fromUserAddressesAction.UpdateUserAddressSuccess(
         {}
@@ -117,7 +133,7 @@ describe('User Addresses effect', () => {
     it('should delete user address', () => {
       const action = new fromUserAddressesAction.DeleteUserAddress({
         userId: '123',
-        addressId: 'address123'
+        addressId: 'address123',
       });
       const completion = new fromUserAddressesAction.DeleteUserAddressSuccess(
         {}

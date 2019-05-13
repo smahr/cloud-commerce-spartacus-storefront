@@ -1,6 +1,7 @@
+import { Action } from '@ngrx/store';
+
 import { EntityState } from './entity-state';
 import { EntityAction } from './entity.action';
-import { Action } from '@ngrx/store';
 
 export const initialEntityState: EntityState<any> = { entities: {} };
 
@@ -33,7 +34,7 @@ export function entityReducer<T>(
         } else {
           let removed = false;
           const newEntities = Object.keys(state.entities).reduce((acc, cur) => {
-            if (ids.indexOf(cur) > -1) {
+            if (ids.includes(cur)) {
               removed = true;
             } else {
               acc[cur] = state.entities[cur];
@@ -67,7 +68,7 @@ export function entityReducer<T>(
     if (Object.keys(entityUpdates).length > 0) {
       return {
         ...state,
-        entities: { ...state.entities, ...entityUpdates }
+        entities: { ...state.entities, ...entityUpdates },
       };
     }
 

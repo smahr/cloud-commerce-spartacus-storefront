@@ -9,7 +9,7 @@ import * as fromEffects from './currencies.effect';
 import * as fromActions from '../actions/currencies.action';
 import { OccModule } from '../../../occ/occ.module';
 import { ConfigModule } from '../../../config/config.module';
-import { Currency } from '../../../occ/occ-models/occ.models';
+import { Currency } from '../../../model/misc.model';
 
 describe('Currencies Effects', () => {
   let actions$: Observable<fromActions.CurrenciesAction>;
@@ -17,7 +17,7 @@ describe('Currencies Effects', () => {
   let effects: fromEffects.CurrenciesEffects;
 
   const currencies: Currency[] = [
-    { active: false, isocode: 'USD', name: 'US Dollar', symbol: '$' }
+    { active: false, isocode: 'USD', name: 'US Dollar', symbol: '$' },
   ];
 
   const data = { currencies };
@@ -28,8 +28,8 @@ describe('Currencies Effects', () => {
       providers: [
         OccSiteService,
         fromEffects.CurrenciesEffects,
-        provideMockActions(() => actions$)
-      ]
+        provideMockActions(() => actions$),
+      ],
     });
 
     service = TestBed.get(OccSiteService);

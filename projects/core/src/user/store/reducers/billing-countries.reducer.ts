@@ -1,15 +1,14 @@
-import * as fromAction from '../actions/billing-countries.action';
-
 import { BillingCountriesState } from '../user-state';
-import { MiscsDataAction, CLEAR_MISCS_DATA } from '../actions/index';
+import * as fromAction from '../actions/billing-countries.action';
+import { CLEAR_MISCS_DATA, ClearMiscsData } from '../actions/index';
 
 export const initialState: BillingCountriesState = {
-  entities: {}
+  entities: {},
 };
 
 export function reducer(
   state = initialState,
-  action: fromAction.BillingCountriesAction | MiscsDataAction
+  action: fromAction.BillingCountriesAction | ClearMiscsData
 ): BillingCountriesState {
   switch (action.type) {
     case fromAction.LOAD_BILLING_COUNTRIES_SUCCESS: {
@@ -18,17 +17,17 @@ export function reducer(
         (countryEntities: { [isocode: string]: any }, name: any) => {
           return {
             ...countryEntities,
-            [name.isocode]: name
+            [name.isocode]: name,
           };
         },
         {
-          ...state.entities
+          ...state.entities,
         }
       );
 
       return {
         ...state,
-        entities
+        entities,
       };
     }
 

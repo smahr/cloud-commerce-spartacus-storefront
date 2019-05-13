@@ -6,22 +6,22 @@ import { StateWithUser, USER_FEATURE } from '../user-state';
 import * as fromActions from '../actions/index';
 import * as fromReducers from '../reducers/index';
 import * as fromSelectors from '../selectors/index';
-import { OrderHistoryList } from '../../../occ/occ-models/index';
 import { LoaderState } from '../../../state/utils/loader/loader-state';
+import { OrderHistoryList } from '../../../model/order.model';
 
 const emptyOrder: OrderHistoryList = {
   orders: [],
   pagination: {},
-  sorts: []
+  sorts: [],
 };
 
 const mockUserOrders: OrderHistoryList = {
   orders: [],
   pagination: {
     currentPage: 1,
-    pageSize: 5
+    pageSize: 5,
   },
-  sorts: [{ code: 'byPage' }]
+  sorts: [{ code: 'byPage' }],
 };
 
 describe('User Orders Selectors', () => {
@@ -31,8 +31,8 @@ describe('User Orders Selectors', () => {
     TestBed.configureTestingModule({
       imports: [
         StoreModule.forRoot({}),
-        StoreModule.forFeature(USER_FEATURE, fromReducers.getReducers())
-      ]
+        StoreModule.forFeature(USER_FEATURE, fromReducers.getReducers()),
+      ],
     });
 
     store = TestBed.get(Store);
@@ -40,7 +40,7 @@ describe('User Orders Selectors', () => {
   });
 
   describe('getOrdersLoaderState', () => {
-    it('should return a loading state', () => {
+    it('should return orders state', () => {
       let result: LoaderState<OrderHistoryList>;
       store
         .pipe(select(fromSelectors.getOrdersState))
@@ -51,7 +51,7 @@ describe('User Orders Selectors', () => {
         loading: false,
         error: false,
         success: false,
-        value: emptyOrder
+        value: emptyOrder,
       });
     });
   });
@@ -67,6 +67,20 @@ describe('User Orders Selectors', () => {
 
       store.dispatch(new fromActions.LoadUserOrdersSuccess(mockUserOrders));
       expect(result).toEqual(mockUserOrders);
+    });
+  });
+
+  describe('getOrdersLoaded', () => {
+    it('should return success flag of orders state', () => {
+      let result: boolean;
+      store
+        .pipe(select(fromSelectors.getOrdersLoaded))
+        .subscribe(value => (result = value));
+
+      expect(result).toEqual(false);
+
+      store.dispatch(new fromActions.LoadUserOrdersSuccess(mockUserOrders));
+      expect(result).toEqual(true);
     });
   });
 });
