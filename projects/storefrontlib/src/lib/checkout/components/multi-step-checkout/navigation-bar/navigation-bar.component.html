@@ -1,0 +1,7 @@
+<div class="cx-nav d-none d-lg-block d-xl-block">
+  <ul class="cx-list">
+    <li *ngFor="let step of steps" class="cx-item">
+      <a class="cx-link" [routerLink]="{ url: step.url }">{{ step.name }}</a>
+    </li>
+  </ul>
+</div>
