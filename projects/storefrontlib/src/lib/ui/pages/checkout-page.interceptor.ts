@@ -37,7 +37,7 @@ export class HardcodedCheckoutComponent implements HttpInterceptor {
         components: {
           component: [
             {
-              uid: 'MultiStepCheckoutComponent',
+              uid: 'NewCheckoutContainerComponent',
               typeCode: 'JspIncludeComponent',
             },
           ],

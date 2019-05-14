@@ -1,7 +1,18 @@
-<div class="cx-nav d-none d-lg-block d-xl-block">
-  <ul class="cx-list">
-    <li *ngFor="let step of steps" class="cx-item">
-      <a class="cx-link" [routerLink]="{ url: step.url }">{{ step.name }}</a>
-    </li>
-  </ul>
-</div>
+<section>
+  <div class="cx-nav d-none d-lg-block d-xl-block">
+    <ul class="cx-list">
+      <li class="cx-item" *ngFor="let step of steps; let i = index">
+        <a
+          [routerLink]="step.url"
+          class="cx-link"
+          [ngClass]="{
+            ' is-active': step.url === activeStepUrl,
+            ' is-disabled': i > activeStepIndex
+          }"
+        >
+          Step{{ i + 1 }}: {{ step.name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>

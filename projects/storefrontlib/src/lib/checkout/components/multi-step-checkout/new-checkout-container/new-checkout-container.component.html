@@ -1,3 +1,25 @@
-<p>
-  new-checkout-container works!
-</p>
+<ng-container
+  *ngIf="(checkoutDetailsService.getCheckoutDetailsLoaded$ | async)"
+>
+  <div *ngIf="(cart$ | async) as cart">
+    <div class="row">
+      <div class="col-md-12 col-lg-8">
+        <cx-navigation-bar></cx-navigation-bar>
+        <div>Content</div>
+        <!-- ORDER SUMMARY SECTION -->
+        <div class="col-md-7 offset-md-5 col-lg-4 offset-lg-0">
+          <cx-order-summary [cart]="cart"></cx-order-summary>
+
+          <!-- CHECKBOX AND PLACE ORDER BUTTON -->
+          <div class="cx-place-order">
+            <cx-place-order></cx-place-order>
+
+            <button class="btn btn-action btn-block">
+              {{ 'common.back' | cxTranslate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

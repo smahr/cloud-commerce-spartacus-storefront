@@ -1,6 +1,7 @@
 @import '../../../theme';
 
-%cx-multi-step-checkout {
+%cx-multi-step-checkout,
+%cx-new-checkout-container {
   @include media-breakpoint-down(md) {
     padding: var(--cx-padding, 1.5rem 0);
   }

@@ -16,7 +16,7 @@ import { PaymentMethodModule } from './payment-method/payment-method.module';
 import { ReviewSubmitModule } from './review-submit/review-submit.module';
 import { ShippingAddressModule } from './shipping-address/shipping-address.module';
 import { PlaceOrderModule } from './place-order/place-order.module';
-import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';
+import { NavigationBarModule } from './navigation-bar/navigation-bar.module';
 import { NewCheckoutContainerComponent } from './new-checkout-container/new-checkout-container.component';
 
 @NgModule({
@@ -39,8 +39,9 @@ import { NewCheckoutContainerComponent } from './new-checkout-container/new-chec
     }),
     CheckoutModule,
     I18nModule,
+    NavigationBarModule,
   ],
-  declarations: [NewCheckoutContainerComponent, NavigationBarComponent],
+  declarations: [NewCheckoutContainerComponent],
   entryComponents: [NewCheckoutContainerComponent],
 })
 export class MultiStepCheckoutModule {}
