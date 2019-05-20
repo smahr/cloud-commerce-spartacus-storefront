@@ -4,11 +4,10 @@ import {
   AuthService,
   GlobalMessageService,
   GlobalMessageType,
-  RoutingService,
 } from '@spartacus/core';
-import { of, Subscription } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { CustomFormValidators } from '../../../shared/utils/validators/custom-form-validators';
+import { AuthRedirectService } from 'projects/core/src/auth/guards/auth-redirect.service';
 
 @Component({
   selector: 'cx-login-form',
@@ -20,33 +19,18 @@ export class LoginFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private routing: RoutingService,
     private globalMessageService: GlobalMessageService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private authRedirectService: AuthRedirectService
   ) {}
 
   ngOnInit() {
-    this.sub = this.auth
-      .getUserToken()
-      .pipe(
-        switchMap(data => {
-          if (data && data.access_token) {
-            this.globalMessageService.remove(GlobalMessageType.MSG_TYPE_ERROR);
-            return this.routing.getRedirectUrl().pipe(take(1));
-          }
-          return of<string>();
-        })
-      )
-      .subscribe(url => {
-        if (url) {
-          // If forced to login due to AuthGuard, then redirect to intended destination
-          this.routing.goByUrl(url);
-          this.routing.clearRedirectUrl();
-        } else {
-          // User manual login
-          this.routing.back();
-        }
-      });
+    this.sub = this.auth.getUserToken().subscribe(data => {
+      if (data && data.access_token) {
+        this.globalMessageService.remove(GlobalMessageType.MSG_TYPE_ERROR);
+        this.authRedirectService.go();
+      }
+    });
 
     this.form = this.fb.group({
       userId: ['', [Validators.required, CustomFormValidators.emailValidator]],
