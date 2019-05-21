@@ -1,5 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
-import { Routes, Router, Route } from '@angular/router';
+import { Routes, Router, Route, NavigationStart } from '@angular/router';
 import { ServerConfig } from '../../config/server-config/server-config';
 import { RoutingConfigService } from './routing-config.service';
 import { UrlMatcherFactoryService } from './url-matcher-factory.service';
@@ -28,6 +28,14 @@ export class ConfigurableRoutesService {
   private configureRouter() {
     // Router could not be injected in constructor due to cyclic dependency with APP_INITIALIZER:
     const router = this.injector.get(Router);
+
+    // spike todo remove:
+    router.events.subscribe(e => {
+      if (e instanceof NavigationStart) {
+        console.log(e);
+        debugger;
+      }
+    });
 
     const configuredRoutes = this.configureRoutes(router.config);
 

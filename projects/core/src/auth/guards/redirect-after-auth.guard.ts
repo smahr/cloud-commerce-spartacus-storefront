@@ -5,7 +5,7 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { RedirectAfterAuthService } from './auth-redirect.service';
+import { RedirectAfterAuthService } from './redirect-after-auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +25,13 @@ export class RedirectAfterAuthGuard implements CanActivate {
     const previousUrl = this.router.url;
     const authUrl = state.url;
 
-    this.redirectAfterAuthService.reportNavigation(previousUrl, authUrl);
+    const navigationId = this.router.getCurrentNavigation().id;
+
+    this.redirectAfterAuthService.reportNavigationToAuthUrl(
+      previousUrl,
+      authUrl,
+      navigationId
+    );
     return true;
   }
 }

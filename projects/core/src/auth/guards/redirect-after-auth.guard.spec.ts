@@ -5,8 +5,8 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RedirectAfterAuthGuard } from './auth-redirect.guard';
-import { RedirectAfterAuthService } from './auth-redirect.service';
+import { RedirectAfterAuthGuard } from './redirect-after-auth.guard';
+import { RedirectAfterAuthService } from './redirect-after-auth.service';
 
 class MockRedirectAfterAuthService {
   reportNavigation = jasmine.createSpy('reportNavigation');
@@ -44,7 +44,7 @@ describe('RedirectAfterAuthGuard', () => {
 
   it('should notify RedirectAfterAuthService with previous url and current url', () => {
     guard.canActivate(activatedRouteSnapshot, routerStateSnapshot);
-    expect(service.reportNavigation).toHaveBeenCalledWith(
+    expect(service.reportNavigationToAuthUrl).toHaveBeenCalledWith(
       '/previous-url',
       '/current-url'
     );
