@@ -6,7 +6,6 @@ import { CartDetailsModule } from './cart-details/cart-details.module';
 import { CartSharedModule } from './cart-shared/cart-shared.module';
 import { CartTotalsModule } from './cart-totals/cart-totals.module';
 import { MiniCartModule } from './mini-cart/mini-cart.module';
-import { CartCouponModule } from './cart-coupon/cart-coupon.module';
 
 @NgModule({
   imports: [
@@ -15,7 +14,6 @@ import { CartCouponModule } from './cart-coupon/cart-coupon.module';
     CartDetailsModule,
     CartTotalsModule,
     CartSharedModule,
-    CartCouponModule,
   ],
   exports: [
     CartDetailsModule,
