@@ -1,6 +1,6 @@
 import {
   Component,
-  ChangeDetectionStrategy,
+  // ChangeDetectionStrategy,
   Output,
   EventEmitter,
   OnInit,
@@ -16,7 +16,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'cx-delivery-mode',
   templateUrl: './delivery-mode.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeliveryModeComponent implements OnInit, OnDestroy {
   @Output()
@@ -36,7 +36,7 @@ export class DeliveryModeComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private checkoutService: CheckoutService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.changedOption = false;

@@ -11,14 +11,18 @@ export class NavigationBarComponent implements OnInit {
   steps: Array<any>;
   activeStepIndex: number;
   activeStepUrl: string;
+  currentStepIndex: any;
+  nextStepIndex: any;
 
   constructor(
     protected config: CheckoutConfig,
     protected routingService: RoutingService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.steps = this.config.steps;
+    this.currentStepIndex = 0;
+    this.nextStepIndex = 1;
     this.routingService
       .getRouterState()
       .pipe(
@@ -34,5 +38,13 @@ export class NavigationBarComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  nextStep(step: any): void {
+    console.log('go to next step:' + this.steps[step].label);
+    this.currentStepIndex = step;
+    if (step < this.steps.length - 1) {
+      this.nextStepIndex = step + 1;
+    }
   }
 }

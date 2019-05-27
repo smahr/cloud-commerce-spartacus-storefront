@@ -1,4 +1,9 @@
 import { CheckoutConfig } from './checkout-config';
+import { ShippingAddressComponent } from '../shipping-address/shipping-address.component';
+import { ReviewSubmitComponent } from '../review-submit/review-submit.component';
+import { DeliveryModeComponent } from '../delivery-mode/delivery-mode.component';
+import { PaymentMethodComponent } from '../payment-method/payment-method.component';
+import { TaxinvoiceComponent } from '../taxinvoice/taxinvoice.component';
 
 export const defaultCheckoutConfig: CheckoutConfig = {
   steps: [
@@ -24,4 +29,12 @@ export const defaultCheckoutConfig: CheckoutConfig = {
       url: '/review-order',
     },
   ],
+  components: [
+    TaxinvoiceComponent,
+    ShippingAddressComponent,
+    DeliveryModeComponent,
+    TaxinvoiceComponent,
+    PaymentMethodComponent,
+    ReviewSubmitComponent
+  ]
 };

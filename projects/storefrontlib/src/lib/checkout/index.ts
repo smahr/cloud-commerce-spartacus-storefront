@@ -10,3 +10,4 @@ export * from './components/multi-step-checkout/review-submit/review-submit.comp
 export * from './components/multi-step-checkout/delivery-mode/delivery-mode.component';
 export * from './components/multi-step-checkout/container/multi-step-checkout.component';
 export * from './components/order-confirmation/order-confirmation.component';
+export * from './components/multi-step-checkout/navigation-bar/navigation-bar.component';

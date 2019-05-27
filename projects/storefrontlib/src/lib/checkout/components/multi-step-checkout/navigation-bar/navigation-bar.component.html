@@ -2,16 +2,13 @@
   <div class="cx-nav d-none d-lg-block d-xl-block">
     <ul class="cx-list">
       <li class="cx-item" *ngFor="let step of steps; let i = index">
-        <a
-          [routerLink]="step.url"
-          class="cx-link"
-          [ngClass]="{
+        <a class="cx-link" [ngClass]="{
             ' is-active': step.url === activeStepUrl,
             ' is-disabled': i > activeStepIndex
-          }"
-        >
+          }" (click)="nextStep(i+1)">
           Step{{ i + 1 }}: {{ step.name }}
         </a>
+
       </li>
     </ul>
   </div>

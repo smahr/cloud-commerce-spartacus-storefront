@@ -18,9 +18,17 @@ import { ShippingAddressModule } from './shipping-address/shipping-address.modul
 import { PlaceOrderModule } from './place-order/place-order.module';
 import { NavigationBarModule } from './navigation-bar/navigation-bar.module';
 import { NewCheckoutContainerComponent } from './new-checkout-container/new-checkout-container.component';
+import { CheckoutComponentHostDirective } from './checkout-component-host.directive';
+import { ShippingAddressComponent } from './shipping-address/shipping-address.component';
+import { DeliveryModeComponent } from './delivery-mode/delivery-mode.component';
+import { ReviewSubmitComponent } from './review-submit/review-submit.component';
+import { PaymentMethodComponent } from './payment-method/payment-method.component';
+import { TaxinvoiceComponent } from './taxinvoice/taxinvoice.component';
+import { BrowserModule } from '@angular/platform-browser';
 
 @NgModule({
   imports: [
+    BrowserModule,
     CommonModule,
     CartSharedModule,
     ShippingAddressModule,
@@ -41,7 +49,11 @@ import { NewCheckoutContainerComponent } from './new-checkout-container/new-chec
     I18nModule,
     NavigationBarModule,
   ],
-  declarations: [NewCheckoutContainerComponent],
-  entryComponents: [NewCheckoutContainerComponent],
+  declarations: [NewCheckoutContainerComponent, CheckoutComponentHostDirective, TaxinvoiceComponent],
+  entryComponents: [NewCheckoutContainerComponent, ShippingAddressComponent, DeliveryModeComponent,
+    PaymentMethodComponent,
+    ReviewSubmitComponent,
+    TaxinvoiceComponent
+  ]
 })
-export class MultiStepCheckoutModule {}
+export class MultiStepCheckoutModule { }
