@@ -16,3 +16,6 @@ export * from './cart-totals/cart-totals.module';
 // mini-cart
 export * from './mini-cart/mini-cart.component';
 export * from './mini-cart/mini-cart.module';
+// cart-coupon
+export * from './cart-coupon/cart-coupon.component';
+export * from './cart-coupon/cart-coupon.module';
