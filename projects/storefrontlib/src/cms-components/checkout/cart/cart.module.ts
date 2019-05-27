@@ -21,7 +21,6 @@ import { MiniCartModule } from './mini-cart/mini-cart.module';
     CartSharedModule,
     AddToCartModule,
     MiniCartModule,
-    CartCouponModule,
   ],
   declarations: [],
 })
