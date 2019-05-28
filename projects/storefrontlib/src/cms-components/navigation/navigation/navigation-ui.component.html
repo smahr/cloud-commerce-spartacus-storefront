@@ -1,13 +1,13 @@
-<div *ngIf="node" class="cx-nav-item nav-item" ngbDropdown>
+<div *ngIf="node" class="cx-nav-item nav-item" cxDropdown>
   <a
     *ngIf="node.children && !node.title; else nodeWithChildren"
-    ngbDropdownToggle
+    cxDropdownToggle
     >&nbsp;
   </a>
   <ng-template #nodeWithChildren>
     <span
       *ngIf="node.children; else noChildren"
-      ngbDropdownToggle
+      cxDropdownToggle
       class="cx-nav-link nav-link"
       role="link"
       id="{{ node.title }}"
@@ -25,7 +25,7 @@
   <ng-container [ngSwitch]="dropdownMode">
     <ng-container *ngSwitchCase="'list'">
       <div
-        ngbDropdownMenu
+        cxDropdownMenu
         class="cx-nav-child-list"
         [attr.aria-label]="node.title"
         role="list"
@@ -54,7 +54,7 @@
 
     <ng-container *ngSwitchCase="'column'">
       <div
-        ngbDropdownMenu
+        cxDropdownMenu
         class="cx-nav-child-list-columns"
         [attr.aria-label]="node.title"
       >

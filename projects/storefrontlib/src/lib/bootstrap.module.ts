@@ -6,7 +6,7 @@ import {
   NgbAccordionConfig,
   NgbRatingModule,
   NgbRatingConfig,
-  NgbDropdownModule,
+  // NgbDropdownModule,
   NgbTypeaheadModule,
   NgbCollapseModule,
   NgbModalModule,
@@ -15,7 +15,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 @NgModule({
   imports: [
-    NgbDropdownModule,
+    // NgbDropdownModule,
     NgbTypeaheadModule,
     NgbPaginationModule,
     NgbModalModule,
@@ -25,7 +25,7 @@ import {
     NgbCollapseModule,
   ],
   exports: [
-    NgbDropdownModule,
+    // NgbDropdownModule,
     NgbTabsetModule,
     NgbAccordionModule,
     NgbRatingModule,
