@@ -1,7 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthService, OccEndpointsService, Order, Cart } from '@spartacus/core';
+import {
+  AuthService,
+  OccEndpointsService,
+  Order,
+  Cart,
+  CartService,
+} from '@spartacus/core';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -19,7 +25,8 @@ export class ApliedCouponsComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private occEndpoints: OccEndpointsService
+    private occEndpoints: OccEndpointsService,
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
@@ -28,7 +35,6 @@ export class ApliedCouponsComponent implements OnInit {
       .pipe(map(token => token.userId))
       .subscribe(userId => {
         this.userId = userId;
-        console.log(userId);
       });
   }
 
@@ -42,7 +48,7 @@ export class ApliedCouponsComponent implements OnInit {
   removeVoucher(voucherId: string) {
     this.http
       .delete(this.getEndpoint(this.userId, this.cart.code, voucherId))
-      .subscribe(() => {});
+      .subscribe(() => this.cartService.loadDetails());
   }
 
   getEndpoint(userId: string, cartId: string, voucherId?: string): string {

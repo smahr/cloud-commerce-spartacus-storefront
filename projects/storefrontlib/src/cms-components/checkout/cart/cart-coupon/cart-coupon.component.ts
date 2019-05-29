@@ -1,7 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { OccEndpointsService, AuthService, Cart, Order } from '@spartacus/core';
+import {
+  OccEndpointsService,
+  AuthService,
+  Cart,
+  Order,
+  CartService,
+} from '@spartacus/core';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -24,7 +30,8 @@ export class CartCouponComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private authService: AuthService,
-    private occEndpoints: OccEndpointsService
+    private occEndpoints: OccEndpointsService,
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
@@ -44,9 +51,7 @@ export class CartCouponComponent implements OnInit {
     );
     this.http
       .post(this.getEndpoint(this.userId, this.cart.code), {}, { params })
-      .subscribe(() => {
-        console.log('applied');
-      });
+      .subscribe(() => this.cartService.loadDetails());
   }
 
   getEndpoint(userId: string, cartId: string): string {
