@@ -57,4 +57,19 @@ export class AppliedCouponsComponent implements OnInit {
       : `/users/${userId}/carts/${cartId}/vouchers`;
     return this.occEndpoints.getEndpoint(endpoint);
   }
+
+  get giveAwayCouponCodes() {
+    const coupons: string[] = [];
+    if (
+      this.cart.appliedOrderPromotions &&
+      this.cart.appliedOrderPromotions.length > 0
+    ) {
+      this.cart.appliedOrderPromotions.forEach(p => {
+        if (p.giveAwayCouponCodes && p.giveAwayCouponCodes.length > 0) {
+          p.giveAwayCouponCodes.forEach(c => coupons.push(c.couponCode));
+        }
+      });
+    }
+    return coupons.join(', ');
+  }
 }

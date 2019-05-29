@@ -12,6 +12,7 @@ export interface PromotionResult {
   consumedEntries?: PromotionOrderEntryConsumed[];
   description?: string;
   promotion?: Promotion;
+  giveAwayCouponCodes?: any[];
 }
 
 export interface Voucher {

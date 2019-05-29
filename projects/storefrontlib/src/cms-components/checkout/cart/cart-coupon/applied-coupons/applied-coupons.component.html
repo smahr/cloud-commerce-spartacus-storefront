@@ -28,3 +28,14 @@
     </div>
   </ng-container>
 </ng-container>
+<div
+  class="cx-summary-row cx-summary-savings"
+  *ngIf="readonly && cart.appliedOrderPromotions"
+>
+  <div class="col-6 cx-summary-label">
+    you've been awarded a coupon:
+  </div>
+  <div class="col-6 cx-summary-amount">
+    {{ giveAwayCouponCodes }}
+  </div>
+</div>
