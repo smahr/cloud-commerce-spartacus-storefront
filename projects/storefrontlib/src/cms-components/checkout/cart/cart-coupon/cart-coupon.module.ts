@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartCouponComponent } from './cart-coupon.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ApliedCouponsComponent } from './aplied-coupons/aplied-coupons.component';
+import { AppliedCouponsComponent } from './applied-coupons/applied-coupons.component';
 
 @NgModule({
-  declarations: [CartCouponComponent, ApliedCouponsComponent],
-  exports: [CartCouponComponent, ApliedCouponsComponent],
+  declarations: [CartCouponComponent, AppliedCouponsComponent],
+  exports: [CartCouponComponent, AppliedCouponsComponent],
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
 })
 export class CartCouponModule {}
