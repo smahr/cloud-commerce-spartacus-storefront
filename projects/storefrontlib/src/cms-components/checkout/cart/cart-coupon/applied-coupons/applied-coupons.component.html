@@ -30,7 +30,7 @@
 </ng-container>
 <div
   class="cx-summary-row cx-summary-savings"
-  *ngIf="readonly && cart.appliedOrderPromotions"
+  *ngIf="readonly && giveAwayCouponCodes.length > 0"
 >
   <div class="col-6 cx-summary-label">
     you've been awarded a coupon:
