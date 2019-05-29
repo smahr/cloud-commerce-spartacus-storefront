@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'cx-cart-coupon',
   templateUrl: './cart-coupon.component.html',
-  styleUrls: ['./cart-coupon.component.css'],
 })
 export class CartCouponComponent implements OnInit {
   form: FormGroup;

@@ -7,7 +7,6 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'cx-aplied-coupons',
   templateUrl: './aplied-coupons.component.html',
-  styleUrls: ['./aplied-coupons.component.css'],
 })
 export class ApliedCouponsComponent implements OnInit {
   userId: string;
