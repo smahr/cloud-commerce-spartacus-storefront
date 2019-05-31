@@ -1,20 +1,18 @@
-import { ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { TestBed, ComponentFixture, async } from '@angular/core/testing';
-
+import { Pipe, PipeTransform } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 import {
+  AuthRedirectService,
   AuthService,
+  GlobalMessageService,
   I18nTestingModule,
   UserToken,
-  AuthRedirectService,
 } from '@spartacus/core';
-
-import { of, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { LoginFormComponent } from './login-form.component';
 
 import createSpy = jasmine.createSpy;
-
-import { GlobalMessageService } from '@spartacus/core';
-import { PipeTransform, Pipe } from '@angular/core';
-import { RouterTestingModule } from '@angular/router/testing';
 
 @Pipe({
   name: 'cxUrl',
@@ -22,8 +20,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 class MockUrlPipe implements PipeTransform {
   transform() {}
 }
-
-import { LoginFormComponent } from './login-form.component';
 
 class MockAuthService {
   authorize = createSpy();
@@ -81,15 +77,14 @@ describe('LoginFormComponent', () => {
   });
 
   it('should login and redirect to return url after auth', () => {
-    component.form.controls['userId'].setValue('test@email.com');
-    component.form.controls['password'].setValue('secret');
+    const username = 'test@email.com';
+    const password = 'secret';
+
+    component.form.controls['userId'].setValue(username);
+    component.form.controls['password'].setValue(password);
     component.login();
 
-    expect(authService.authorize).toHaveBeenCalledWith(
-      'test@email.com',
-      'secret'
-    );
-
+    expect(authService.authorize).toHaveBeenCalledWith(username, password);
     expect(authRedirectService.redirect).toHaveBeenCalled();
   });
 

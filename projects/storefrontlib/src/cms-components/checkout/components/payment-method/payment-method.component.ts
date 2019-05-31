@@ -7,7 +7,6 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import {
   Address,
-  CartDataService,
   CheckoutService,
   GlobalMessageService,
   GlobalMessageType,
@@ -20,7 +19,7 @@ import {
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Card } from '../../../../shared/components/card/card.component';
-import { ICON_TYPE } from '../../../misc/icon';
+import { ICON_TYPE } from '../../../misc/icon/index';
 import { CheckoutConfigService } from '../../checkout-config.service';
 
 @Component({
@@ -41,7 +40,6 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
   checkoutStepUrlPrevious: string;
 
   constructor(
-    protected cartData: CartDataService,
     protected userService: UserService,
     protected checkoutService: CheckoutService,
     protected globalMessageService: GlobalMessageService,
@@ -54,7 +52,7 @@ export class PaymentMethodComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isLoading$ = this.userService.getPaymentMethodsLoading();
-    this.userService.loadPaymentMethods(this.cartData.userId);
+    this.userService.loadPaymentMethods();
 
     this.checkoutStepUrlNext = this.checkoutConfigService.getNextCheckoutStepUrl(
       this.activatedRoute
