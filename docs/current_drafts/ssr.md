@@ -174,14 +174,18 @@ app.listen(PORT, () => {
 });
 ```
 
+In the file above, replace `storefrontapp` for the name of your application.
+
 Add the following scripts to your package.json
 
 ```json
     "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
     "serve:ssr": "node dist/server.js",
-    "build:client-and-server-bundles": "ng build --prod && ng run angular.io-example:server",
+    "build:client-and-server-bundles": "ng build --prod && ng run storefrontapp:server",
     "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
 ```
+
+On the `build:client-and-server-bundles` script, replace `storefrontapp` with the name of your angular application
 
 Build the SSR version of your spartacus shell app using the following commands:
 
@@ -227,7 +231,7 @@ StorefrontModule.withConfig({
 
 ## Known issues
 
-If the backend server (endpoint) is eithernot reachable or not valid through https, you’ll get the following error:
+If the backend server (endpoint) is either not reachable or not valid through https, you’ll get the following error:
 
 `TypeError: You provided 'undefined' where a stream was expected. You can provide an Observable, Promise, Array, or Iterable.`
 
