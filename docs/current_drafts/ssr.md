@@ -2,6 +2,8 @@
 
 ## Installation Steps (Shell app)
 
+The following steps can be performed to run your Spartacus shell app that includes the Spartacus libraries in SSR mode.
+
 Add the following *dev* dependencies to package.json:
 
 ```json
@@ -24,7 +26,7 @@ Add the following configuration to your existing angular.json (under projects.st
 
 Add the following files to your existing shell app:
 
-tsconfig.server.json
+### tsconfig.server.json
 
 ```json
 {
@@ -42,13 +44,13 @@ tsconfig.server.json
 }
 ```
 
-src/main.server.ts
+### src/main.server.ts
 
 ```typescript
 export { AppServerModule } from './app/app.server.module';
 ```
 
-src/app/app.server.module
+### src/app/app.server.module
 
 ```typescript
 import { NgModule } from "@angular/core";
@@ -56,7 +58,6 @@ import {
   ServerModule,
   ServerTransferStateModule
 } from "@angular/platform-server";
-// import {ModuleMapLoaderModule} from '@nguniversal/module-map-ngfactory-loader';
 
 import { AppModule } from "./app.module";
 import { AppComponent } from "./app.component";
@@ -75,7 +76,7 @@ import { AppComponent } from "./app.component";
 export class AppServerModule {}
 ```
 
-webpack.server.config.js
+### webpack.server.config.js
 
 ```javascript
 const path = require('path');
@@ -112,7 +113,7 @@ module.exports = {
 };
 ```
 
-server.ts
+### server.ts
 
 ```typescript
 // These are important and needed before anything else
@@ -174,9 +175,9 @@ app.listen(PORT, () => {
 });
 ```
 
-In the file above, replace `storefrontapp` for the name of your application.
+* In the file above, replace `storefrontapp` for the name of your application.
 
-Add the following scripts to your package.json
+* Add the following scripts to your package.json
 
 ```json
     "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
@@ -185,13 +186,15 @@ Add the following scripts to your package.json
     "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
 ```
 
-On the `build:client-and-server-bundles` script, replace `storefrontapp` with the name of your angular application
+* On the `build:client-and-server-bundles` script, replace `storefrontapp` with the name of your angular application
 
-Build the SSR version of your spartacus shell app using the following commands:
+* Build the SSR version of your spartacus shell app using the following commands:
 
 `npm run build:ssr && npm run serve:ssr`
 
 ## Installation Steps (SPA development)
+
+The following steps can be performed to run Spartacus in SSR mode using the Spartacus storefront app (Spartacus internal development/PR submission).
 
 1. Make sure that the production server endpoint is set in your `environment.prod.ts` (dev mode) or `app.module.ts` (shell app mode)
 
@@ -231,8 +234,8 @@ StorefrontModule.withConfig({
 
 ## Known issues
 
-If the backend server (endpoint) is either not reachable or not valid through https, you’ll get the following error:
+If the backend server (endpoint) is either not valid or can't be reached, you’ll get the following error:
 
 `TypeError: You provided 'undefined' where a stream was expected. You can provide an Observable, Promise, Array, or Iterable.`
 
-Make sure the backend endpoint is properly configured and reachable through https
+Make sure the backend endpoint is properly configured and reachable
