@@ -37,6 +37,7 @@ import {
 } from './product/index';
 import { ProductImagesModule } from './product/product-images/product-images.module';
 import { OrderConfirmationModule } from './order-confirmation/index';
+import { MerchandisingCarouselModule } from './product/carousel/merchandising-carousel/merchandising-carousel.module';
 
 @NgModule({
   imports: [
@@ -55,6 +56,7 @@ import { OrderConfirmationModule } from './order-confirmation/index';
     ProductListModule,
     ProductTabsModule,
     ProductCarouselModule,
+    MerchandisingCarouselModule,
     ProductReferencesModule,
     OrderDetailsModule,
     PaymentMethodsModule,
@@ -74,4 +76,4 @@ import { OrderConfirmationModule } from './order-confirmation/index';
     ResetPasswordModule,
   ],
 })
-export class CmsLibModule {}
+export class CmsLibModule { }
