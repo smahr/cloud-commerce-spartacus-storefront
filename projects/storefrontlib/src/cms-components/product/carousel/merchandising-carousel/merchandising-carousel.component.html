@@ -1,0 +1,4 @@
+<ng-container *ngIf="(component.data$ | async) as data">
+    Here's your CMS data:
+    <pre>{{data | json}}</pre>
+</ng-container>
