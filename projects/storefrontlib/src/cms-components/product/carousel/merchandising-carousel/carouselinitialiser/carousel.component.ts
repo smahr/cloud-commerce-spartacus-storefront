@@ -91,7 +91,7 @@ export class CarouselComponent {
 			const service = new DataService({ strategy, url, numbertodisplay: +numbertodisplay });
 
 			console.log('inited');
-			service.getProducts().then((data) => {
+			service.getProducts().subscribe(data => {
 				log('data received', data);
 
 				let items = null;
@@ -102,7 +102,7 @@ export class CarouselComponent {
 				log('items', items);
 
 				console.log('owl carousel available', $.fn['owlCarousel'] != null);
-				if (items && items.length && $.fn['owlCarousel'] != null) {
+				if (items && items.length /*&& $.fn['owlCarousel'] != null*/) {
 					new CarouselComponent({
 						el,
 						data: {
@@ -117,6 +117,9 @@ export class CarouselComponent {
 					log('rendered');
 				}
 			});
+			/*service.getProducts().then((data) => {
+				
+			});*/
 		});
 
 		window.__merchcarousels = window.__merchcarousels || <any>{};

@@ -1,5 +1,5 @@
 import { log } from './utils';
-//import * as $ from 'jquery';
+import { ajax } from 'rxjs/ajax';
 
 
 /**
@@ -14,7 +14,7 @@ export class DataService {
 	private url: string;
 
 	constructor({ strategy, url, numbertodisplay }) {
-		console.log("dkdjhdkjhkjhkjfh");
+
 		this.tenant = this._getTenantId();
 		this.strategy = strategy;
 		this.numberToDisplay = numbertodisplay;
@@ -22,16 +22,17 @@ export class DataService {
 		this.facets = this._getFacets();
 
 		this.url = this._buildUrl(url);
-		console.log("dkdjhdkjfh");
+
 	}
 
 	/**
 	 * Retrieves carousel data
-	 * @returns {Promise<Object>}
+	 * @returns {Observable<Object>}
 	 */
 	getProducts() {
-		console.log('blabla');
-		return $.get(this.url);
+		//return $.get(this.url); // no more JQuery
+		const apiData = ajax(this.url);
+		return apiData;
 	}
 
 	/**
